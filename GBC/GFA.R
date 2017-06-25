@@ -232,12 +232,12 @@ GFA_EM <- function(X,type,E,L,v0,v1,lam,eta,param,intercept=T,smoothing="MRF",W.
         chizvar = chol( diag(iU,L) + t(W)%*%(W*D) )
       }, error = function(e) {
         print(e)
-        print(type[j])
-        print(G)
-        print(iV)
-        print(Z%*%t(Z))
-        print(Z%*%(t(Z)*G))
-        print(max(abs(Z)))
+        print(i)
+        print(D)
+        print(iU)
+        print(t(W)%*%W)
+        print(t(W)%*%(W*D))
+        print(max(abs(W)))
       })
       Z[,i] = backsolve(chizvar,forwardsolve(t(chizvar),t(W)%*%c))
     }
