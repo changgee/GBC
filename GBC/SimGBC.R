@@ -2,29 +2,10 @@
 #
 
 
-<<<<<<< HEAD
-source("GBC/GFA.R")
-source("Eval/gbcmetric.R")
-source("Sim/SimData.R")
-#source("/home/changgee/project/GBC/GBC/GFA.R")
-#source("/home/changgee/project/GBC/Eval/gbcmetric.R")
-#source("/home/changgee/project/GBC/Sim/SimData.R")
-=======
-if ( file.exists("GBC/GFA.R") )
-  source("GBC/GFA.R")
-else if ( file.exists("/home/changgee/project/GBC/GBC/GFA.R") )
-  source("/home/changgee/project/GBC/GBC/GFA.R")
 
-if ( file.exists("Eval/gbcmetric.R") )
-  source("Eval/gbcmetric.R")
-else if ( file.exists("/home/changgee/project/GBC/Eval/gbcmetric.R") )
-  source("/home/changgee/project/GBC/Eval/gbcmetric.R")
-
-if ( file.exists("Sim/SimData.R") )
-  source("Sim/SimData.R")
-else if ( file.exists("/home/changgee/project/GBC/Sim/SimData.R") )
-  source("/home/changgee/project/GBC/Sim/SimData.R")
->>>>>>> 6e64d8e1eeb3b551bf0eed254a4e5d4140202785
+source("/home/cchan40/project/GBC/GBC/GFA.R")
+source("/home/cchan40/project/GBC/Eval/gbcmetric.R")
+source("/home/cchan40/project/GBC/Sim/SimData.R")
 
 
 SimGBC_BCV <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,intercept=F,smoothing="MRF",thres=0.5,fold=3,batch=0)
