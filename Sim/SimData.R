@@ -18,7 +18,7 @@ SimData <- function(seed,p,n,type,param,overlap,Edensity=0.05)
       else if ( type[i] < 3 )
         param[i] = sample(1:15,1)
       else
-        param[i] = 1000
+        param[i] = 100
   }
   else if ( length(type) == 1 )
     type = rep(type,p)

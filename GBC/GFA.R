@@ -164,12 +164,12 @@ GFA_EM <- function(X,type,E,L,v0,v1,lam,eta,param,intercept=T,smoothing="MRF",W.
       }
       else
       {
-        tmp = abs(mu[j,]-psi[j,])
+        tmp = mu[j,]-psi[j,]
         for ( i in 1:n )
-          if ( tmp[i] < 1e-5 )
-            rho[j,i] = b[j,i]*(1-tmp[i]/2+tmp[i]^2/6-tmp[i]^3/24)/2/(1+exp(-tmp[i]))
+          if ( abs(tmp[i]) < 1e-5 )
+            rho[j,i] = b[j,i]*(1+tmp[i]/2+tmp[i]^2/6+tmp[i]^3/24)/2/(1+exp(tmp[i]))
           else
-            rho[j,i] = b[j,i]*(1-exp(-tmp[i]))/2/tmp[i]/(1+exp(-tmp[i]))
+            rho[j,i] = b[j,i]*(exp(tmp[i])-1)/2/tmp[i]/(1+exp(tmp[i]))
       }
     }
     
@@ -225,10 +225,20 @@ GFA_EM <- function(X,type,E,L,v0,v1,lam,eta,param,intercept=T,smoothing="MRF",W.
       D = rho[,i]
       c = kappa[,i] + D*(psi[,i]-m)
       if ( GBC )
-        iU = iu0+thetaZ[,i]*diu
+        iU = iu0 + thetaZ[,i]*diu
       else
         iU = rep(1,L)
-      chizvar = chol( diag(iU,L) + t(W)%*%(W*D) )
+      tryCatch({
+        chizvar = chol( diag(iU,L) + t(W)%*%(W*D) )
+      }, error = function(e) {
+        print(e)
+        print(type[j])
+        print(G)
+        print(iV)
+        print(Z%*%t(Z))
+        print(Z%*%(t(Z)*G))
+        print(max(abs(Z)))
+      })
       Z[,i] = backsolve(chizvar,forwardsolve(t(chizvar),t(W)%*%c))
     }
     
@@ -254,7 +264,17 @@ GFA_EM <- function(X,type,E,L,v0,v1,lam,eta,param,intercept=T,smoothing="MRF",W.
       G = rho[j,]
       f = kappa[j,] + G*(psi[j,]-m[j])
       iV = iv0 + thetaW[j,]*div
-      chiwvar = chol( diag(iV,L) + Z%*%(t(Z)*G) )
+      tryCatch({
+        chiwvar = chol( diag(iV,L) + Z%*%(t(Z)*G) )
+      }, error = function(e) {
+        print(e)
+        print(type[j])
+        print(G)
+        print(iV)
+        print(Z%*%t(Z))
+        print(Z%*%(t(Z)*G))
+        print(max(abs(Z)))
+      })
       W[j,] = backsolve(chiwvar,forwardsolve(t(chiwvar),Z%*%f))
     }
 
@@ -268,7 +288,9 @@ GFA_EM <- function(X,type,E,L,v0,v1,lam,eta,param,intercept=T,smoothing="MRF",W.
       Z[l,] = sqrt(sqrt(ww/zz)) * Z[l,]
     }
     
-#    print(paste("Iteration ",iter," completed."))
+    print(paste("Iteration ",iter," completed."))
+    print(t(W)%*%W)
+    print(max(abs(ptheta-thetaW)))
 
     if ( max(abs(ptheta-thetaW)) < 1e-3 )
       break
