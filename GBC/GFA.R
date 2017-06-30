@@ -172,7 +172,7 @@ GFA_EM <- function(X,type,E,L,v0,v1,lam,eta,param,intercept=T,smoothing="MRF",W.
             rho[j,i] = b[j,i]*(exp(tmp[i])-1)/2/tmp[i]/(1+exp(tmp[i]))
       }
     }
-    
+
     
     # E-step for gamma
     for ( l in 1:L )
@@ -274,6 +274,7 @@ GFA_EM <- function(X,type,E,L,v0,v1,lam,eta,param,intercept=T,smoothing="MRF",W.
         print(Z%*%t(Z))
         print(Z%*%(t(Z)*G))
         print(max(abs(Z)))
+        stop()
       })
       W[j,] = backsolve(chiwvar,forwardsolve(t(chiwvar),Z%*%f))
     }
@@ -288,11 +289,8 @@ GFA_EM <- function(X,type,E,L,v0,v1,lam,eta,param,intercept=T,smoothing="MRF",W.
       Z[l,] = sqrt(sqrt(ww/zz)) * Z[l,]
     }
     
-    print(paste("Iteration ",iter," completed."))
-    print(t(W)%*%W)
-    print(max(abs(ptheta-thetaW)))
 
-    if ( max(abs(ptheta-thetaW)) < 1e-3 )
+    if ( max(abs(ptheta-thetaW)) < 5e-2 )
       break
   }
   

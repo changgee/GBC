@@ -5,8 +5,8 @@ SimData <- function(seed,p,n,type,param,overlap,Edensity=0.05)
   size = 50
   L = 4
 
-  meanWZ = 1.5
-  sigmaWZ = 0.3
+  meanWZ = 1.3
+  sigmaWZ = 0.2
 
   if ( is.null(type) )
   {
@@ -18,7 +18,7 @@ SimData <- function(seed,p,n,type,param,overlap,Edensity=0.05)
       else if ( type[i] < 3 )
         param[i] = sample(1:15,1)
       else
-        param[i] = 100
+        param[i] = 2000
   }
   else if ( length(type) == 1 )
     type = rep(type,p)
@@ -64,9 +64,9 @@ SimData <- function(seed,p,n,type,param,overlap,Edensity=0.05)
     }
     
   E = matrix(0,0,2)
-  for ( l in 1:(p/50) )
+  for ( l in 1:(p/size) )
   {
-    g = 1:50+(l-1)*50
+    g = 1:size+(l-1)*size
     for ( i in g )
       for ( j in g )
         if ( i != j & runif(1) < Edensity )
