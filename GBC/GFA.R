@@ -64,21 +64,21 @@ GFA_EM <- function(X,type,E,L,v0,v1,lam,eta,param,intercept=T,smoothing="MRF",W.
     }
     if ( type[j] == 1 )
     {
-      pbar = (X[j,]+1)/(param[j]+2)
+      pbar = pmin(pmax(X[j,]/param[j],1/param[j]/2),1-1/param[j]/2)
       Y[j,] = log(pbar/(1-pbar))
       kappa[j,] = X[j,]-param[j]/2
       b[j,] = param[j]
     }
     if ( type[j] == 2 )
     {
-      pbar = param[j]/(param[j]+X[j,]+1)
+      pbar = pmax(X[j,]/(param[j]+X[j,]),1/(2*param[j]+1))
       Y[j,] = log(pbar/(1-pbar))
       kappa[j,] = (X[j,]-param[j])/2
       b[j,] = param[j]+X[j,]
     }
     if ( type[j] == 3 )
     {
-      Y[j,] = log(pmax(1,X[j,]))
+      Y[j,] = log(pmax(1/2,X[j,]))
       psi[j,] = log(param[j])
       kappa[j,] = X[j,]-param[j]/2
       b[j,] = param[j]
@@ -86,32 +86,37 @@ GFA_EM <- function(X,type,E,L,v0,v1,lam,eta,param,intercept=T,smoothing="MRF",W.
   }
   
   if ( !intercept )
-  {
     m = rep(0,p)
-    for ( j in 1:p )
-      if ( type[j] == 1 )
-        m[j] = log(1/49)
-  }
   else
   {
-    m = apply(Y,1,median)
+    m = apply(X,1,median)
     for ( j in 1:p )
     {
       if ( type[j] == 1 )
       {
         if ( m[j] == 0 )
-          pr = 1/50
+          pr = 1/param[j]/2
         else if ( m[j] == param[j] )
-          pr = 49/50
+          pr = 1-1/param[j]/2
         else
           pr = m[j]/param[j]
         m[j] = log(pr/(1-pr))
       }
+      else if ( type[j] == 2 )
+      {
+        if ( m[j] == 0 )
+          pr = 1/(2*param[j]+1)
+        else
+          pr = m[j]/(param[j]+m[j])
+        m[j] = log(pr/(1-pr))
+      }
       else if ( type[j] == 3 )
-        m[j] = log(max(1,m[j]))
+      {
+          m[j] = log(max(1/2,m[j]))
+      }
     }
   }
-  
+
   if ( !is.null(W.init) )
   {
     W = W.init
@@ -228,17 +233,7 @@ GFA_EM <- function(X,type,E,L,v0,v1,lam,eta,param,intercept=T,smoothing="MRF",W.
         iU = iu0 + thetaZ[,i]*diu
       else
         iU = rep(1,L)
-      tryCatch({
-        chizvar = chol( diag(iU,L) + t(W)%*%(W*D) )
-      }, error = function(e) {
-        print(e)
-        print(i)
-        print(D)
-        print(iU)
-        print(t(W)%*%W)
-        print(t(W)%*%(W*D))
-        print(max(abs(W)))
-      })
+      chizvar = chol( diag(iU,L) + t(W)%*%(W*D) )
       Z[,i] = backsolve(chizvar,forwardsolve(t(chizvar),t(W)%*%c))
     }
     
@@ -264,18 +259,7 @@ GFA_EM <- function(X,type,E,L,v0,v1,lam,eta,param,intercept=T,smoothing="MRF",W.
       G = rho[j,]
       f = kappa[j,] + G*(psi[j,]-m[j])
       iV = iv0 + thetaW[j,]*div
-      tryCatch({
-        chiwvar = chol( diag(iV,L) + Z%*%(t(Z)*G) )
-      }, error = function(e) {
-        print(e)
-        print(type[j])
-        print(G)
-        print(iV)
-        print(Z%*%t(Z))
-        print(Z%*%(t(Z)*G))
-        print(max(abs(Z)))
-        stop()
-      })
+      chiwvar = chol( diag(iV,L) + Z%*%(t(Z)*G) )
       W[j,] = backsolve(chiwvar,forwardsolve(t(chiwvar),Z%*%f))
     }
 

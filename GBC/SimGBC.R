@@ -24,7 +24,7 @@ if ( file.exists("/home/cchan40/project/GBC/Sim/SimData.R") )
   source("/home/cchan40/project/GBC/Sim/SimData.R")
 
 
-SimGBC_BCV <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,intercept=F,smoothing="MRF",thres=0.5,fold=3,batch=0)
+SimGBC_BCV <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,intercept=T,smoothing="MRF",thres=0.5,fold=3,batch=0)
 {
   D1 = length(v0)
   D2 = length(lam)
@@ -109,7 +109,7 @@ SimGBC_BCV <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,intercept=F,
 
 
 
-SimGBC_CCV <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,intercept=F,smoothing="MRF",thres=0.5,fold=3,batch=0)
+SimGBC_CCV <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,intercept=T,smoothing="MRF",thres=0.5,fold=3,batch=0)
 {
   D1 = length(v0)
   D2 = length(lam)
@@ -191,7 +191,7 @@ SimGBC_CCV <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,intercept=F,
 }
 
 
-SimGBC_BIC <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,intercept=F,smoothing="MRF",thres=0.5,batch=0)
+SimGBC_BIC <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,intercept=T,smoothing="MRF",thres=0.5,batch=0)
 {
   D1 = length(v0)
   D2 = length(lam)
@@ -258,7 +258,7 @@ SimGBC_BIC <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,intercept=F,
 }
 
 
-SimGBC_Plain <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,intercept=F,smoothing="Ising",thres=0.5,batch=0)
+SimGBC_Plain <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,intercept=T,smoothing="Ising",thres=0.5,batch=0)
 {
   D1 = length(v0)
   D2 = length(lam)
