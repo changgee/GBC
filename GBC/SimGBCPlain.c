@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 int main()
 {
@@ -16,6 +18,7 @@ int main()
 	char vname[50];
 	FILE *f, *g, *h, *m;
 	int s, batch_size, batch, R;
+	struct stat exist;
 
 	R = 100;
 	batch_size = 5;
@@ -23,7 +26,10 @@ int main()
 	strcpy(method,"GBC");
 	strcpy(crit,"Plain");
 
-	strcpy(master,"/home/cchan40/project/GBC");
+	if ( stat("/home/changgee/project/GBC",&exist) == 0 )
+		strcpy(master,"/home/changgee/project/GBC");
+	else
+		strcpy(master,"/home/cchan40/project/GBC");
 	sprintf(home,"%s/GBC",master);
 	sprintf(script,"%s/Sim%s",home,crit);
 	strcpy(src,"SimGBC.R");

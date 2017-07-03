@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 int main()
 {
@@ -16,16 +18,20 @@ int main()
 	char vname[50];
 	FILE *f, *g, *h, *m;
 	int s, batch_size, batch, R;
+	struct stat exist;
 
 	R = 100;
 	batch_size = 10;
 
 	strcpy(method,"FABIA");
-	strcpy(crit,"BIC");
+	strcpy(crit,"Plain");
 
-	strcpy(master,"/longgroup/changgee/GBC");
+	if ( stat("/home/changgee/project/GBC",&exist) == 0 )
+		strcpy(master,"/home/changgee/project/GBC");
+	else
+		strcpy(master,"/home/cchan40/project/GBC");
 	sprintf(home,"%s/FABIA",master);
-	sprintf(script,"%s/20170518",home);
+	sprintf(script,"%s/SimPlain",home);
 	strcpy(src,"SimFABIA.R");
 
 	sprintf(fname,"%s%s",method,crit);
@@ -36,7 +42,7 @@ int main()
 	m = fopen(fname,"w");
 	chmod(fname,0755);
 
-	for ( s=0 ; s<6 ; s++ )
+	for ( s=0 ; s<10 ; s++ )
 	{
 		sprintf(acronym,"%s%s%02d",method,crit,s+1);
 		sprintf(vname,"res%s",acronym);
@@ -67,20 +73,33 @@ int main()
 			sprintf(line,"source(\"%s/%s\")\n",home,src);
 			fputs(line,f);
 
-			if ( (s/2)%3 <= 1 )
+			if ( (s/2)%5 == 2 )
+				fputs("p = 10000\n",f);
+			else
+				fputs("p = 1000\n",f);
+
+			if ( (s/2)%5 != 3 )
 				fputs("L = 4\n",f);
 			else
 				fputs("L = 5\n",f);
 
-			if ( (s/2)%3 == 0 )
+			if ( (s/2)%5 == 0 )
 			{
-				fputs("sigma2 = 9\n",f);
+				fputs("type = 0\n",f);
+				fputs("param = 9\n",f);
 				fputs("seed = 100\n",f);
+			}
+			else if ( (s/2)%5 < 4 )
+			{
+				fputs("type = 0\n",f);
+				fputs("param = 25\n",f);
+				fputs("seed = 200\n",f);
 			}
 			else
 			{
-				fputs("sigma2 = 25\n",f);
-				fputs("seed = 200\n",f);
+				fputs("type = NULL\n",f);
+				fputs("param = NULL\n",f);
+				fputs("seed = 100\n",f);
 			}
 
 			if ( s%2 == 0 )
@@ -88,14 +107,18 @@ int main()
 			else
 				fputs("overlap = 15\n",f);
 
+			fputs("n = 300\n",f);
 			fputs("thrW = 12:16/10\n",f);
 			fputs("thrZ = 5:9/20\n",f);
 
-			sprintf(line,"%s = SimFABIA_%s(%d,seed,overlap,sigma2,L,thrW,thrZ,batch=%d)\n",vname,crit,batch_size,batch);
+			sprintf(line,"if ( !file.exists(\"%s/%s%03d\") )\n",script,vname,batch+1);
 			fputs(line,f);
-
-			sprintf(line,"save(%s,file=\"%s/%s%03d\")\n",vname,script,vname,batch+1);
+			fputs("{\n",f);
+			sprintf(line,"  %s = SimFABIA_%s(%d,seed,p,n,type,param,overlap,L,thrW,thrZ,batch=%d)\n",vname,crit,batch_size,batch);
 			fputs(line,f);
+			sprintf(line,"  save(%s,file=\"%s/%s%03d\")\n",vname,script,vname,batch+1);
+			fputs(line,f);
+			fputs("}\n",f);
 			fclose(f);
 		}
 
@@ -131,7 +154,7 @@ int main()
 		fputs("  {\n",g);
 		sprintf(line,"    tmp$S = c(tmp$S,%s$S)\n",vname);
 		fputs(line,g);
-		sprintf(line,"    tmp$Shat = c(tmp$Shat,%s$SShat)\n",vname);
+		sprintf(line,"    tmp$fits = c(tmp$fits,%s$fits)\n",vname);
 		fputs(line,g);
 		sprintf(line,"    tmp$CE = c(tmp$CE,%s$CE)\n",vname);
 		fputs(line,g);
@@ -144,12 +167,6 @@ int main()
 		sprintf(line,"    tmp$SPE = c(tmp$SPE,%s$SPE)\n",vname);
 		fputs(line,g);
 		sprintf(line,"    tmp$MCC = c(tmp$MCC,%s$MCC)\n",vname);
-		fputs(line,g);
-		sprintf(line,"    tmp$BCV = abind(tmp$BCV,%s$BCV)\n",vname);
-		fputs(line,g);
-		sprintf(line,"    tmp$opt_thrW = c(tmp$opt_thrW,%s$opt_thrW)\n",vname);
-		fputs(line,g);
-		sprintf(line,"    tmp$opt_thrZ = c(tmp$opt_thrZ,%s$opt_thrZ)\n",vname);
 		fputs(line,g);
 		fputs("  }\n",g);
 		fputs("}\n",g);
