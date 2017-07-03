@@ -8,15 +8,23 @@ if ( !require(fabia) )
   biocLite("fabia")
   library(fabia)
 }
-source("Eval/gbcmetric.R")
-source("Sim/SimData.R")
-#source("/longgroup/changgee/GBC/Eval/gbcmetric.R")
-#source("/longgroup/changgee/GBC/Sim/SimData.R")
-#source("/home/changgee/project/GBC/Eval/gbcmetric.R")
-#source("/home/changgee/project/GBC/Sim/SimData.R")
+
+if ( file.exists("Eval/gbcmetric.R") )
+  source("Eval/gbcmetric.R")
+if ( file.exists("/home/changgee/project/GBC/Eval/gbcmetric.R") )
+  source("/home/changgee/project/GBC/Eval/gbcmetric.R")
+if ( file.exists("/home/cchan40/project/GBC/Eval/gbcmetric.R") )
+  source("/home/cchan40/project/GBC/Eval/gbcmetric.R")
+
+if ( file.exists("Sim/SimData.R") )
+  source("Sim/SimData.R")
+if ( file.exists("/home/changgee/project/GBC/Sim/SimData.R") )
+  source("/home/changgee/project/GBC/Sim/SimData.R")
+if ( file.exists("/home/cchan40/project/GBC/Sim/SimData.R") )
+  source("/home/cchan40/project/GBC/Sim/SimData.R")
 
 
-SimFABIA_BCV <- function(R,seed,overlap,sigma2,L,thrW,thrZ,p=1000,fold=3,batch=0)
+SimFABIA_BCV <- function(R,seed,p,n,type,param,overlap,L,thrW,thrZ,fold=3,batch=0)
 {
   D1 = length(thrW)
   D2 = length(thrZ)
@@ -61,7 +69,7 @@ SimFABIA_BCV <- function(R,seed,overlap,sigma2,L,thrW,thrZ,p=1000,fold=3,batch=0
         pD = p - length(Widx)
         nD = n - length(Zidx)
 
-        fit = fabia(XD,L,random=0,center=0)
+        fit = fabia(XD,L,random=0,center=2)
         
         for ( d1 in 1:D1 )
           for ( d2 in 1:D2 )
@@ -100,7 +108,7 @@ SimFABIA_BCV <- function(R,seed,overlap,sigma2,L,thrW,thrZ,p=1000,fold=3,batch=0
     opt_thrW[r] = thrW[(opt-1)%%D1+1]
     opt_thrZ[r] = thrZ[(opt-1)%/%D1+1]
     
-    fit = fabia(data$X,L,random=0,center=0)
+    fit = fabia(data$X,L,random=0,center=2)
     fabia_bic = extractBic(fit,opt_thrW[r],opt_thrZ[r])
     
     Shat = list()
@@ -163,7 +171,7 @@ SimFABIA_CCV <- function(R,seed,overlap,sigma2,L,thrW,thrZ,p=1000,fold=3,batch=0
       XB = data$X[-Widx,]
       pB = p - length(Widx)
       
-      fit = fabia(XB,L,random=0,center=0)
+      fit = fabia(XB,L,random=0,center=2)
       
       for ( d1 in 1:D1 )
         for ( d2 in 1:D2 )
@@ -200,7 +208,7 @@ SimFABIA_CCV <- function(R,seed,overlap,sigma2,L,thrW,thrZ,p=1000,fold=3,batch=0
       XB = data$X[,-Zidx]
       nB = n - length(Zidx)
       
-      fit = fabia(XB,L,random=0,center=0)
+      fit = fabia(XB,L,random=0,center=2)
       
       for ( d1 in 1:D1 )
         for ( d2 in 1:D2 )
@@ -237,7 +245,7 @@ SimFABIA_CCV <- function(R,seed,overlap,sigma2,L,thrW,thrZ,p=1000,fold=3,batch=0
     opt_thrW[r] = thrW[(opt-1)%%D1+1]
     opt_thrZ[r] = thrZ[(opt-1)%/%D1+1]
     
-    fit = fabia(data$X,L,random=0,center=0)
+    fit = fabia(data$X,L,random=0,center=2)
     fabia_bic = extractBic(fit,opt_thrW[r],opt_thrZ[r])
     
     Shat = list()
@@ -291,7 +299,7 @@ SimFABIA_BIC <- function(R,seed,overlap=overlap,sigma2,L,thrW,thrZ,p=1000,batch=
     for ( l in 1:LL )
       S[[r]][[l]] = list(r=which(data$W[,l]!=0),c=which(data$Z[l,]!=0))
     
-    fit = fabia(data$X,L,random=0,center=0)
+    fit = fabia(data$X,L,random=0,center=2)
     
     for ( d1 in 1:D1 )
       for ( d2 in 1:D2 )
@@ -348,7 +356,7 @@ SimFABIA_BIC <- function(R,seed,overlap=overlap,sigma2,L,thrW,thrZ,p=1000,batch=
 
 
 
-SimFABIA <- function(R,seed,overlap,sigma2,L,thrW,thrZ,p=1000,batch=0)
+SimFABIA <- function(R,seed,p,n,type,param,overlap,L,thrW,thrZ,p=1000,batch=0)
 {
   D1 = length(thrW)
   D2 = length(thrZ)
@@ -359,22 +367,20 @@ SimFABIA <- function(R,seed,overlap,sigma2,L,thrW,thrZ,p=1000,batch=0)
   SEN = array(0,c(D1,D2,R))
   SPE = array(0,c(D1,D2,R))
   MCC = array(0,c(D1,D2,R))
-  AUC = array(0,c(D1,D2,R))
-  
-  S = list()
 
+  S = list()
+  fits = list()
+  
   for ( r in 1:R )
   {
-    data = SimData(seed+batch+r,overlap,sigma2,p)
-    
-    n = ncol(data$Z)
+    data = SimData(seed+batch+r,p,n,type,param,overlap)
     
     LL = nrow(data$Z)
     S[[r]] = list()
     for ( l in 1:LL )
       S[[r]][[l]] = list(r=which(data$W[,l]!=0),c=which(data$Z[l,]!=0))
     
-    fit = fabia(data$X,L,random=0,center=0)
+    fit = fabia(data$X,L,random=0,center=2)
 
     for ( d1 in 1:D1 )
       for ( d2 in 1:D2 )
@@ -394,9 +400,11 @@ SimFABIA <- function(R,seed,overlap,sigma2,L,thrW,thrZ,p=1000,batch=0)
         SPE[d1,d2,r] = eval$SPE_CE
         MCC[d1,d2,r] = eval$MCC_CE
       }
+    
+    fits[[r]] = fit
   }
   
-  list(overlap=overlap,sigma2=sigma2,L=L,thrW=thrW,thrZ=thrZ,S=S,CE=CE,FP=FP,FN=FN,SEN=SEN,SPE=SPE,MCC=MCC)
+  list(p=p,n=n,type=type,param=param,overlap=overlap,L=L,thrW=thrW,thrZ=thrZ,S=S,fits=fits,CE=CE,FP=FP,FN=FN,SEN=SEN,SPE=SPE,MCC=MCC)
 }
 
 
