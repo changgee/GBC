@@ -121,13 +121,13 @@ int main()
 			if ( (s/2)%5 == 0 )
 			{
 				fputs("type = 0\n",f);
-				fputs("param = 9\n",f);
+				fputs("param = 1\n",f);
 				fputs("seed = 100\n",f);
 			}
 			else if ( (s/2)%5 < 4 )
 			{
 				fputs("type = 0\n",f);
-				fputs("param = 25\n",f);
+				fputs("param = 9\n",f);
 				fputs("seed = 200\n",f);
 			}
 			else
@@ -196,8 +196,8 @@ int main()
 		fputs("  {\n",g);
 		sprintf(line,"    tmp$S = c(tmp$S,%s$S)\n",vname);
 		fputs(line,g);
-		sprintf(line,"    tmp$fits = c(tmp$fits,%s$fits)\n",vname);
-		fputs(line,g);
+//		sprintf(line,"    tmp$fits = c(tmp$fits,%s$fits)\n",vname);
+//		fputs(line,g);
 		sprintf(line,"    tmp$CE = abind(tmp$CE,%s$CE)\n",vname);
 		fputs(line,g);
 		sprintf(line,"    tmp$FP = abind(tmp$FP,%s$FP)\n",vname);
