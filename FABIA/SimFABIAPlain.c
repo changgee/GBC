@@ -28,7 +28,7 @@ int main()
 	strcpy(method,"FABIA");
 	strcpy(crit,"Plain");
 
-	if ( access("/home/cchan40/changgee",X_OK) == 0 )
+	if ( access("/home/cchan40",X_OK) == 0 )
 	{
 		where = Emory;
 		strcpy(master,"/home/cchan40/project/GBC");
@@ -72,13 +72,15 @@ int main()
 			sprintf(fname,"%s/%s%03d",script,acronym,batch+1);
 			if ( where == Emory )
 				sprintf(line,"qsub -q fruit.q %s\n",fname);
-			else
-			{
+			else if ( where == HPC )
 				sprintf(line,"bsub -q qlonglab -e %s.e -o %s.o < %s\n",fname,fname,fname);
-			}
+			else
+				sprintf(line,"bsub -q cceb_normal -e %s.e -o %s.o < %s\n",fname,fname,fname);
 			fputs(line,g);
 
 			f = fopen(fname,"w");
+			if ( where == LPC )
+				fputs("module load R\n",f);
 			sprintf(Rname,"%s.R",fname);
 			sprintf(line,"R --vanilla < %s\n",Rname);
 			fputs(line,f);
@@ -143,10 +145,17 @@ int main()
 
 
 		sprintf(fname,"%s/%sMERGE",script,acronym);
-		sprintf(line,"bsub -q qlonglab < %s\n",fname);
+		if ( where == Emory )
+			sprintf(line,"qsub -q fruit.q %s\n",fname);
+		else if ( where == HPC )
+			sprintf(line,"bsub -q qlonglab -e %s.e -o %s.o < %s\n",fname,fname,fname);
+		else
+			sprintf(line,"bsub -q cceb_normal -e %s.e -o %s.o < %s\n",fname,fname,fname);
 		fputs(line,m);
 
 		f = fopen(fname,"w");
+		if ( where == LPC )
+			fputs("module load R\n",f);
 		sprintf(Rname,"%s.R",fname);
 		sprintf(line,"R --vanilla < %s\n",Rname);
 		fputs(line,f);
