@@ -1,7 +1,5 @@
 #include <stdio.h>
 #include <string.h>
-#include <sys/stat.h>
-#include <unistd.h>
 
 int main()
 {
@@ -18,21 +16,17 @@ int main()
 	char vname[50];
 	FILE *f, *g, *h, *m;
 	int s, batch_size, batch, R;
-	struct stat exist;
 
 	R = 100;
-	batch_size = 5;
+	batch_size = 10;
 
-	strcpy(method,"GBC");
-	strcpy(crit,"Plain");
+	strcpy(method,"FABIA");
+	strcpy(crit,"BIC");
 
-	if ( stat("/home/changgee/project/GBC",&exist) == 0 )
-		strcpy(master,"/home/changgee/project/GBC");
-	else
-		strcpy(master,"/home/cchan40/project/GBC");
-	sprintf(home,"%s/GBC",master);
-	sprintf(script,"%s/Sim%s",home,crit);
-	strcpy(src,"SimGBC.R");
+	strcpy(master,"/longgroup/changgee/GBC");
+	sprintf(home,"%s/FABIA",master);
+	sprintf(script,"%s/20170518",home);
+	strcpy(src,"SimFABIA.R");
 
 	sprintf(fname,"%s%s",method,crit);
 	h = fopen(fname,"w");
@@ -42,7 +36,7 @@ int main()
 	m = fopen(fname,"w");
 	chmod(fname,0755);
 
-	for ( s=0 ; s<30 ; s++ )
+	for ( s=0 ; s<6 ; s++ )
 	{
 		sprintf(acronym,"%s%s%02d",method,crit,s+1);
 		sprintf(vname,"res%s",acronym);
@@ -61,6 +55,7 @@ int main()
 			fputs(line,g);
 
 			f = fopen(fname,"w");
+			fputs("module load R\n",f);
 			sprintf(Rname,"%s.R",fname);
 			sprintf(line,"R --vanilla < %s\n",Rname);
 			fputs(line,f);
@@ -72,49 +67,20 @@ int main()
 			sprintf(line,"source(\"%s/%s\")\n",home,src);
 			fputs(line,f);
 
-			if ( s/10 == 0 )
-			{
-				fputs("eta = 0\n",f);
-				fputs("smoothing = \"Ising\"\n",f);
-			}
-			else if ( s/10 == 1 )
-			{
-				fputs("eta = 0.1\n",f);
-				fputs("smoothing = \"Ising\"\n",f);
-			}
-			else
-			{
-				fputs("eta = 0.1\n",f);
-				fputs("smoothing = \"MRF\"\n",f);
-			}
-
-			if ( (s/2)%5 == 2 )
-				fputs("p = 10000\n",f);
-			else
-				fputs("p = 1000\n",f);
-
-			if ( (s/2)%5 != 3 )
+			if ( (s/2)%3 <= 1 )
 				fputs("L = 4\n",f);
 			else
 				fputs("L = 5\n",f);
 
-			if ( (s/2)%5 == 0 )
+			if ( (s/2)%3 == 0 )
 			{
-				fputs("type = 0\n",f);
-				fputs("param = 9\n",f);
+				fputs("sigma2 = 9\n",f);
 				fputs("seed = 100\n",f);
-			}
-			else if ( (s/2)%5 < 4 )
-			{
-				fputs("type = 0\n",f);
-				fputs("param = 25\n",f);
-				fputs("seed = 200\n",f);
 			}
 			else
 			{
-				fputs("type = NULL\n",f);
-				fputs("param = NULL\n",f);
-				fputs("seed = 100\n",f);
+				fputs("sigma2 = 25\n",f);
+				fputs("seed = 200\n",f);
 			}
 
 			if ( s%2 == 0 )
@@ -122,19 +88,14 @@ int main()
 			else
 				fputs("overlap = 15\n",f);
 
-			fputs("n = 300\n",f);
-			fputs("k = 5\n",f);
-			fputs("v0 = 3:7/30\n",f);
-			fputs("lam = 5:9/8\n",f);
+			fputs("thrW = 12:16/10\n",f);
+			fputs("thrZ = 5:9/20\n",f);
 
-			sprintf(line,"if ( !file.exists(\"%s/%s%03d\") )\n",script,vname,batch+1);
+			sprintf(line,"%s = SimFABIA_%s(%d,seed,overlap,sigma2,L,thrW,thrZ,batch=%d)\n",vname,crit,batch_size,batch);
 			fputs(line,f);
-			fputs("{\n",f);
-			sprintf(line,"  %s = SimGBC_%s(%d,seed,p,n,type,param,overlap,L,k,v0,lam,eta,smoothing=smoothing,batch=%d)\n",vname,crit,batch_size,batch);
+
+			sprintf(line,"save(%s,file=\"%s/%s%03d\")\n",vname,script,vname,batch+1);
 			fputs(line,f);
-			sprintf(line,"  save(%s,file=\"%s/%s%03d\")\n",vname,script,vname,batch+1);
-			fputs(line,f);
-			fputs("}\n",f);
 			fclose(f);
 		}
 
@@ -146,6 +107,7 @@ int main()
 		fputs(line,m);
 
 		f = fopen(fname,"w");
+		fputs("module load R\n",f);
 		sprintf(Rname,"%s.R",fname);
 		sprintf(line,"R --vanilla < %s\n",Rname);
 		fputs(line,f);
@@ -169,19 +131,25 @@ int main()
 		fputs("  {\n",g);
 		sprintf(line,"    tmp$S = c(tmp$S,%s$S)\n",vname);
 		fputs(line,g);
-		sprintf(line,"    tmp$fits = c(tmp$fits,%s$fits)\n",vname);
+		sprintf(line,"    tmp$Shat = c(tmp$Shat,%s$SShat)\n",vname);
 		fputs(line,g);
-		sprintf(line,"    tmp$CE = abind(tmp$CE,%s$CE)\n",vname);
+		sprintf(line,"    tmp$CE = c(tmp$CE,%s$CE)\n",vname);
 		fputs(line,g);
-		sprintf(line,"    tmp$FP = abind(tmp$FP,%s$FP)\n",vname);
+		sprintf(line,"    tmp$FP = c(tmp$FP,%s$FP)\n",vname);
 		fputs(line,g);
-		sprintf(line,"    tmp$FN = abind(tmp$FN,%s$FN)\n",vname);
+		sprintf(line,"    tmp$FN = c(tmp$FN,%s$FN)\n",vname);
 		fputs(line,g);
-		sprintf(line,"    tmp$SEN = abind(tmp$SEN,%s$SEN)\n",vname);
+		sprintf(line,"    tmp$SEN = c(tmp$SEN,%s$SEN)\n",vname);
 		fputs(line,g);
-		sprintf(line,"    tmp$SPE = abind(tmp$SPE,%s$SPE)\n",vname);
+		sprintf(line,"    tmp$SPE = c(tmp$SPE,%s$SPE)\n",vname);
 		fputs(line,g);
-		sprintf(line,"    tmp$MCC = abind(tmp$MCC,%s$MCC)\n",vname);
+		sprintf(line,"    tmp$MCC = c(tmp$MCC,%s$MCC)\n",vname);
+		fputs(line,g);
+		sprintf(line,"    tmp$BCV = abind(tmp$BCV,%s$BCV)\n",vname);
+		fputs(line,g);
+		sprintf(line,"    tmp$opt_thrW = c(tmp$opt_thrW,%s$opt_thrW)\n",vname);
+		fputs(line,g);
+		sprintf(line,"    tmp$opt_thrZ = c(tmp$opt_thrZ,%s$opt_thrZ)\n",vname);
 		fputs(line,g);
 		fputs("  }\n",g);
 		fputs("}\n",g);
