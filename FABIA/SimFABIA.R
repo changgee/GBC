@@ -356,7 +356,7 @@ SimFABIA_BIC <- function(R,seed,overlap=overlap,sigma2,L,thrW,thrZ,p=1000,batch=
 
 
 
-SimFABIA <- function(R,seed,p,n,type,param,overlap,L,thrW,thrZ,p=1000,batch=0)
+SimFABIA_Plain <- function(R,seed,p,n,type,param,overlap,L,thrW,thrZ,p=1000,batch=0)
 {
   D1 = length(thrW)
   D2 = length(thrZ)
