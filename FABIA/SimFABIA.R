@@ -404,7 +404,7 @@ SimFABIA_Plain <- function(R,seed,p,n,type,param,overlap,L,thrW,thrZ,batch=0)
     fits[[r]] = fit
   }
   
-  list(p=p,n=n,type=type,param=param,overlap=overlap,L=L,thrW=thrW,thrZ=thrZ,S=S,fits=fits,CE=CE,FP=FP,FN=FN,SEN=SEN,SPE=SPE,MCC=MCC)
+  list(p=p,n=n,type=type,param=param,overlap=overlap,L=L,thrW=thrW,thrZ=thrZ,S=S,CE=CE,FP=FP,FN=FN,SEN=SEN,SPE=SPE,MCC=MCC)
 }
 
 

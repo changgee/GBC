@@ -105,13 +105,13 @@ int main()
 			if ( (s/2)%5 == 0 )
 			{
 				fputs("type = 0\n",f);
-				fputs("param = 9\n",f);
+				fputs("param = 1\n",f);
 				fputs("seed = 100\n",f);
 			}
 			else if ( (s/2)%5 < 4 )
 			{
 				fputs("type = 0\n",f);
-				fputs("param = 25\n",f);
+				fputs("param = 9\n",f);
 				fputs("seed = 200\n",f);
 			}
 			else
@@ -179,19 +179,19 @@ int main()
 		fputs("  {\n",g);
 		sprintf(line,"    tmp$S = c(tmp$S,%s$S)\n",vname);
 		fputs(line,g);
-		sprintf(line,"    tmp$fits = c(tmp$fits,%s$fits)\n",vname);
+//		sprintf(line,"    tmp$fits = c(tmp$fits,%s$fits)\n",vname);
+//		fputs(line,g);
+		sprintf(line,"    tmp$CE = abind(tmp$CE,%s$CE)\n",vname);
 		fputs(line,g);
-		sprintf(line,"    tmp$CE = c(tmp$CE,%s$CE)\n",vname);
+		sprintf(line,"    tmp$FP = abind(tmp$FP,%s$FP)\n",vname);
 		fputs(line,g);
-		sprintf(line,"    tmp$FP = c(tmp$FP,%s$FP)\n",vname);
+		sprintf(line,"    tmp$FN = abind(tmp$FN,%s$FN)\n",vname);
 		fputs(line,g);
-		sprintf(line,"    tmp$FN = c(tmp$FN,%s$FN)\n",vname);
+		sprintf(line,"    tmp$SEN = abind(tmp$SEN,%s$SEN)\n",vname);
 		fputs(line,g);
-		sprintf(line,"    tmp$SEN = c(tmp$SEN,%s$SEN)\n",vname);
+		sprintf(line,"    tmp$SPE = abind(tmp$SPE,%s$SPE)\n",vname);
 		fputs(line,g);
-		sprintf(line,"    tmp$SPE = c(tmp$SPE,%s$SPE)\n",vname);
-		fputs(line,g);
-		sprintf(line,"    tmp$MCC = c(tmp$MCC,%s$MCC)\n",vname);
+		sprintf(line,"    tmp$MCC = abind(tmp$MCC,%s$MCC)\n",vname);
 		fputs(line,g);
 		fputs("  }\n",g);
 		fputs("}\n",g);
