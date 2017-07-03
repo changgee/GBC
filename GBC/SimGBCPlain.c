@@ -2,6 +2,10 @@
 #include <string.h>
 #include <unistd.h>
 
+#define HPC 0
+#define LPC 1
+#define Emory 2
+
 int main()
 {
 	char fname[100];
@@ -16,7 +20,7 @@ int main()
 	char src[50];
 	char vname[50];
 	FILE *f, *g, *h, *m;
-	int s, batch_size, batch, R;
+	int s, batch_size, batch, R, where;
 
 	R = 100;
 	batch_size = 5;
@@ -24,10 +28,21 @@ int main()
 	strcpy(method,"GBC");
 	strcpy(crit,"Plain");
 
-	if ( access("/home/changgee/project/GBC",X_OK) == 0 )
-		strcpy(master,"/home/changgee/project/GBC");
-	else
+	if ( access("/home/cchan40",X_OK) == 0 )
+	{
+		where = Emory;
 		strcpy(master,"/home/cchan40/project/GBC");
+	}
+	else if ( access("/project/qlonglab/changgee",X_OK) == 0 )
+	{
+		where = HPC;
+		strcpy(master,"/home/changgee/project/GBC");
+	}
+	else
+	{
+		where = LPC;
+		strcpy(master,"/home/changgee/project/GBC");
+	}
 	sprintf(home,"%s/GBC",master);
 	sprintf(script,"%s/Sim%s",home,crit);
 	strcpy(src,"SimGBC.R");
@@ -55,10 +70,17 @@ int main()
 		for ( batch=0 ; batch<R ; batch+=batch_size )
 		{
 			sprintf(fname,"%s/%s%03d",script,acronym,batch+1);
-			sprintf(line,"qsub -q fruit.q %s\n",fname);
+			if ( where == Emory )
+				sprintf(line,"qsub -q fruit.q %s\n",fname);
+			else if ( where == HPC )
+				sprintf(line,"bsub -q qlonglab -e %s.e -o %s.o < %s\n",fname,fname,fname);
+			else
+				sprintf(line,"bsub -q cceb_normal -e %s.e -o %s.o < %s\n",fname,fname,fname);
 			fputs(line,g);
 
 			f = fopen(fname,"w");
+			if ( where == LPC )
+				fputs("module load R\n",f);
 			sprintf(Rname,"%s.R",fname);
 			sprintf(line,"R --vanilla < %s\n",Rname);
 			fputs(line,f);
@@ -140,10 +162,17 @@ int main()
 
 
 		sprintf(fname,"%s/%sMERGE",script,acronym);
-		sprintf(line,"qsub -q fruit.q %s\n",fname);
+		if ( where == Emory )
+			sprintf(line,"qsub -q fruit.q %s\n",fname);
+		else if ( where == HPC )
+			sprintf(line,"bsub -q qlonglab -e %s.e -o %s.o < %s\n",fname,fname,fname);
+		else
+			sprintf(line,"bsub -q cceb_normal -e %s.e -o %s.o < %s\n",fname,fname,fname);
 		fputs(line,m);
 
 		f = fopen(fname,"w");
+		if ( where == LPC )
+			fputs("module load R\n",f);
 		sprintf(Rname,"%s.R",fname);
 		sprintf(line,"R --vanilla < %s\n",Rname);
 		fputs(line,f);
