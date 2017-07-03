@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <string.h>
-#include <sys/stat.h>
 #include <unistd.h>
 
 int main()
@@ -18,7 +17,6 @@ int main()
 	char vname[50];
 	FILE *f, *g, *h, *m;
 	int s, batch_size, batch, R;
-	struct stat exist;
 
 	R = 100;
 	batch_size = 10;
@@ -26,7 +24,7 @@ int main()
 	strcpy(method,"FABIA");
 	strcpy(crit,"Plain");
 
-	if ( stat("/home/changgee/project/GBC",&exist) == 0 )
+	if ( access("/home/changgee/project/GBC",X_OK) == 0 )
 		strcpy(master,"/home/changgee/project/GBC");
 	else
 		strcpy(master,"/home/cchan40/project/GBC");
