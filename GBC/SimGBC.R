@@ -275,6 +275,7 @@ SimGBC_Plain <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,intercept=
   
   for ( r in 1:R )
   {
+    print(r)
     data = SimData(seed+batch+r,p,n,type,param,overlap)
     
     LL = nrow(data$Z)
