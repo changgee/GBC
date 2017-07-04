@@ -20,7 +20,7 @@ SimData <- function(seed,p,n,type,param,overlap,Edensity=0.05)
       else if ( type[i] < 3 )
         param[i] = sample(1:15,1)
       else
-        param[i] = 10000
+        param[i] = 20000
   }
   else if ( length(type) == 1 )
     type = rep(type,p)
@@ -41,7 +41,7 @@ SimData <- function(seed,p,n,type,param,overlap,Edensity=0.05)
     Z[l,sample(1:n,sizeZ[l])] = rnorm(sizeZ[l],meanWZ,sigmaWZ) * sample(c(-1,1),sizeZ[l],TRUE)
   
   m = rep(0,p)
-  m[type==3] = 4
+  m[type==3] = 3.5
 
   mu = W%*%Z + m
   X = matrix(0,p,n)
