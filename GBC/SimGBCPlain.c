@@ -109,7 +109,7 @@ int main()
 			}
 
 			if ( (s/2)%5 == 2 )
-				fputs("p = 10000\n",f);
+				fputs("p = 5000\n",f);
 			else
 				fputs("p = 1000\n",f);
 
@@ -121,13 +121,13 @@ int main()
 			if ( (s/2)%5 == 0 )
 			{
 				fputs("type = 0\n",f);
-				fputs("param = 1\n",f);
+				fputs("param = 0.25\n",f);
 				fputs("seed = 100\n",f);
 			}
 			else if ( (s/2)%5 < 4 )
 			{
 				fputs("type = 0\n",f);
-				fputs("param = 9\n",f);
+				fputs("param = 1\n",f);
 				fputs("seed = 200\n",f);
 			}
 			else
@@ -144,8 +144,8 @@ int main()
 
 			fputs("n = 300\n",f);
 			fputs("k = 5\n",f);
-			fputs("v0 = 3:7/30\n",f);
-			fputs("lam = 5:9/8\n",f);
+			fputs("v0 = 1:5/40\n",f);
+			fputs("lam = 8:12/8\n",f);
 
 			sprintf(line,"if ( !file.exists(\"%s/%s%03d\") )\n",script,vname,batch+1);
 			fputs(line,f);
