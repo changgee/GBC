@@ -145,7 +145,7 @@ int main()
 			fputs("n = 300\n",f);
 			fputs("k = 5\n",f);
 			fputs("v0 = 1:5/35\n",f);
-			fputs("lam = 11:15/8\n",f);
+			fputs("lam = 8:12/6\n",f);
 
 			sprintf(line,"if ( !file.exists(\"%s/%s%03d\") )\n",script,vname,batch+1);
 			fputs(line,f);
