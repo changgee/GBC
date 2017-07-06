@@ -81,6 +81,11 @@ int main()
 			f = fopen(fname,"w");
 			if ( where == LPC )
 				fputs("module load R\n",f);
+			else if ( where == HPC )
+			{
+				fputs("source /etc/profile.d/modules.sh\n",f);
+				fputs("module load R-3.3.1\n",f);
+			}
 			sprintf(Rname,"%s.R",fname);
 			sprintf(line,"R --vanilla < %s\n",Rname);
 			fputs(line,f);
@@ -173,6 +178,11 @@ int main()
 		f = fopen(fname,"w");
 		if ( where == LPC )
 			fputs("module load R\n",f);
+		else if ( where == HPC )
+		{
+			fputs("source /etc/profile.d/modules.sh\n",f);
+			fputs("module load R-3.3.1\n",f);
+		}
 		sprintf(Rname,"%s.R",fname);
 		sprintf(line,"R --vanilla < %s\n",Rname);
 		fputs(line,f);
