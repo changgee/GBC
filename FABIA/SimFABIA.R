@@ -290,8 +290,8 @@ SimFABIA_BIC <- function(R,seed,p,n,type,param,overlap,L,thrW,thrZ,batch=0)
   
   for ( r in 1:R )
   {
-    data = SimData(seed+batch+r,overlap,sigma2,p)
-    
+    data = SimData(seed+batch+r,p,n,type,param,overlap)
+
     LL = nrow(data$Z)
     S[[r]] = list()
     for ( l in 1:LL )
