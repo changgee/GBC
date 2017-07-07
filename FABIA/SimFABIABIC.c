@@ -20,7 +20,7 @@ int main()
 	char src[50];
 	char vname[50];
 	FILE *f, *g, *h, *m;
-	int s, batch_size, batch, R;
+	int s, batch_size, batch, R, where;
 
 	R = 100;
 	batch_size = 10;
