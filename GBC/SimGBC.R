@@ -215,6 +215,11 @@ SimGBC_BIC <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,intercept=T,
   {
     data = SimData(seed+batch+r,p,n,type,param,overlap)
     
+    LL = nrow(data$Z)
+    S[[r]] = list()
+    for ( l in 1:LL )
+      S[[r]][[l]] = list(r=which(data$W[,l]!=0),c=which(data$Z[l,]!=0))
+
     for ( d1 in 1:D1 )
       for ( d2 in 1:D2 )
       {
@@ -222,12 +227,13 @@ SimGBC_BIC <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,intercept=T,
 
         What = fit$W*(fit$thetaW>thres)
         Zhat = fit$Z*(fit$thetaZ>thres)
+        muhat = What %*% Zhat + fit$m
 
         nParam = sum(fit$thetaW>thres) + sum(fit$thetaZ>thres)
         if ( intercept )
           nParam = nParam + p
 
-        BIC[d1,d2,r] = n*sum(log(apply((data$X-fit$m-What%*%Zhat)^2,1,mean))) + nParam*log(n*p)
+        BIC[d1,d2,r] = -2*llk(data$X,muhat,data$type,data$param) + nParam*log(n*p)
         
         if ( opt_BIC[r] > BIC[d1,d2,r] )
         {

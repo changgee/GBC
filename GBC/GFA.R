@@ -286,7 +286,7 @@ GFA_EM <- function(X,type,E,L,v0,v1,lam,eta,param,intercept=T,smoothing="MRF",W.
 
 
 # function deviance: calculate the deviance
-deviance <- function(X,mu,type,param)
+llk <- function(X,mu,type,param)
 {
   p = nrow(X)
   n = ncol(X)
@@ -295,13 +295,13 @@ deviance <- function(X,mu,type,param)
   for ( j in 1:p )
   {
     if ( type[j] == 0 )
-      dev = dev + n*log(sum((X[j,]-mu[j,])^2)/n)
+      dev = dev - n*log(sum((X[j,]-mu[j,])^2)/n)/2
     else if ( type[j] == 1 )
-      dev = dev - 2*sum(dbinom(X[j,],param[j],1/(1+exp(-mu[j,])),TRUE))
+      dev = dev + sum(dbinom(X[j,],param[j],1/(1+exp(-mu[j,])),TRUE))
     else if ( type[j] == 2 )
-      dev = dev - 2*sum(dnbinom(X[j,],param[j],1/(1+exp(mu[j,])),TRUE))
+      dev = dev + sum(dnbinom(X[j,],param[j],1/(1+exp(mu[j,])),TRUE))
     else if ( type[j] == 3 )
-      dev = dev - 2*sum(dpois(X[j,],exp(mu[j,]),TRUE))
+      dev = dev + sum(dpois(X[j,],exp(mu[j,]),TRUE))
   }
   dev
 }
