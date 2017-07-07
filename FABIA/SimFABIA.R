@@ -268,7 +268,7 @@ SimFABIA_CCV <- function(R,seed,overlap,sigma2,L,thrW,thrZ,p=1000,fold=3,batch=0
 
 
 
-SimFABIA_BIC <- function(R,seed,overlap=overlap,sigma2,L,thrW,thrZ,p=1000,batch=0)
+SimFABIA_BIC <- function(R,seed,p,n,type,param,overlap,L,thrW,thrZ,batch=0)
 {
   D1 = length(thrW)
   D2 = length(thrZ)
@@ -292,21 +292,20 @@ SimFABIA_BIC <- function(R,seed,overlap=overlap,sigma2,L,thrW,thrZ,p=1000,batch=
   {
     data = SimData(seed+batch+r,overlap,sigma2,p)
     
-    n = ncol(data$Z)
-    
     LL = nrow(data$Z)
     S[[r]] = list()
     for ( l in 1:LL )
       S[[r]][[l]] = list(r=which(data$W[,l]!=0),c=which(data$Z[l,]!=0))
     
     fit = fabia(data$X,L,random=0,center=2)
+    fit.m = apply(data$X,1,median)
     
     for ( d1 in 1:D1 )
       for ( d2 in 1:D2 )
       {
         fabia_bic = extractBic(fit,thrW[d1],thrZ[d2])
         
-        nParam = 0
+        nParam = p
         What = matrix(0,p,L)
         Zhat = matrix(0,L,n)
         
@@ -322,7 +321,9 @@ SimFABIA_BIC <- function(R,seed,overlap=overlap,sigma2,L,thrW,thrZ,p=1000,batch=
           }
         }
         
-        BIC[d1,d2,r] = n*sum(log(apply((data$X-What%*%Zhat)^2,1,mean))) + nParam*log(n*p)
+        muhat = What %*% Zhat + fit.m
+        
+        BIC[d1,d2,r] = -2*llk(data$X,muhat,data$type,data$param) + nParam*log(n*p)
         
         if ( opt_BIC[r] > BIC[d1,d2,r] )
         {
@@ -351,7 +352,7 @@ SimFABIA_BIC <- function(R,seed,overlap=overlap,sigma2,L,thrW,thrZ,p=1000,batch=
     MCC[r] = eval$MCC_CE
   }
   
-  list(overlap=overlap,sigma2=sigma2,L=L,thrW=thrW,thrZ=thrZ,S=S,Shat=bclus,CE=CE,FP=FP,FN=FN,SEN=SEN,SPE=SPE,MCC=MCC,BIC=BIC,opt_thrW=opt_thrW,opt_thrZ=opt_thrZ)
+  list(p=p,n=n,type=type,param=param,overlap=overlap,L=L,thrW=thrW,thrZ=thrZ,S=S,CE=CE,FP=FP,FN=FN,SEN=SEN,SPE=SPE,MCC=MCC,BIC=BIC,opt_thrW=opt_thrW,opt_thrZ=opt_thrZ)
 }
 
 

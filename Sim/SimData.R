@@ -71,3 +71,25 @@ SimData <- function(seed,p,n,type,param,overlap,Edensity=0.05)
   
   list(p=p,n=n,type=type,param=param,W=W,Z=Z,m=m,mu=mu,X=X,E=E)
 }
+
+
+# function deviance: calculate the deviance
+llk <- function(X,mu,type,param)
+{
+  p = nrow(X)
+  n = ncol(X)
+  
+  dev = 0
+  for ( j in 1:p )
+  {
+    if ( type[j] == 0 )
+      dev = dev - n*log(sum((X[j,]-mu[j,])^2)/n)/2
+    else if ( type[j] == 1 )
+      dev = dev + sum(dbinom(X[j,],param[j],1/(1+exp(-mu[j,])),TRUE))
+    else if ( type[j] == 2 )
+      dev = dev + sum(dnbinom(X[j,],param[j],1/(1+exp(mu[j,])),log=TRUE))
+    else if ( type[j] == 3 )
+      dev = dev + sum(dpois(X[j,],exp(mu[j,]),TRUE))
+  }
+  dev
+}
