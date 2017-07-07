@@ -44,7 +44,7 @@ int main()
 		strcpy(master,"/home/changgee/project/GBC");
 	}
 	sprintf(home,"%s/FABIA",master);
-	sprintf(script,"%s/SimPlain",home);
+	sprintf(script,"%s/Sim%s",home,crit);
 	strcpy(src,"SimFABIA.R");
 
 	sprintf(fname,"%s%s",method,crit);
