@@ -299,7 +299,7 @@ llk <- function(X,mu,type,param)
     else if ( type[j] == 1 )
       dev = dev + sum(dbinom(X[j,],param[j],1/(1+exp(-mu[j,])),TRUE))
     else if ( type[j] == 2 )
-      dev = dev + sum(dnbinom(X[j,],param[j],1/(1+exp(mu[j,])),TRUE))
+      dev = dev + sum(dnbinom(X[j,],param[j],1/(1+exp(mu[j,])),log=TRUE))
     else if ( type[j] == 3 )
       dev = dev + sum(dpois(X[j,],exp(mu[j,]),TRUE))
   }
