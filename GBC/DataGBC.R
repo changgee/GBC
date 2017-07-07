@@ -1,8 +1,12 @@
 # GBC for Data Analysis
 
 
-#source("/home/changgee/project/GBC/GBC/GFA.R")
-source("GFA/GFA.R")
+if ( file.exists("GBC/GFA.R") )
+  source("GBC/GFA.R")
+if ( file.exists("/home/changgee/project/GBC/GBC/GFA.R") )
+  source("/home/changgee/project/GBC/GBC/GFA.R")
+if ( file.exists("/home/cchan40/project/GBC/GBC/GFA.R") )
+  source("/home/cchan40/project/GBC/GBC/GFA.R")
 
 
 DataGBC_BCV <- function(X,E,L,k,v0,lam,eta,param,intercept=F,smoothing="MRF",thres=0.5,fold=3,seed=100,run=NULL)
@@ -214,6 +218,40 @@ DataGBC_BIC <- function(X,E,L,k,v0,lam,eta,param,intercept=F,smoothing="MRF",thr
 }  
 
 
+
+
+DataGBC_Plain <- function(ipath,opath,name,L,k,v0,lam,eta,intercept=T,smoothing="MRF")
+{
+  p = nrow(X)
+  n = ncol(X)
+  D1 = length(v0)
+  D2 = length(lam)
+
+  fname = paste(name,"dat",sep=".")
+  fpath = paste(ipath,fname,sep="/")
+  load(fpath)
+  
+  for ( d1 in 1:D1 )
+    for ( d2 in 1:D2 )
+    {
+      fname = paste("res",name,"GBC",L,k,v0[d1],lam[d2],eta,sep="_")
+      fpath = paste(opath,fname,sep="/")
+      if ( !file.exists(fpath) )
+      {
+        time = system.time(fit <- GFA_EM(X,type,E,L,v0[d1],k*v0[d1],lam[d2],eta,param,intercept,smoothing,GBC=T))
+        
+        What = fit$W
+        Zhat = fit$Z
+        mhat = fit$m
+        thetaWhat = fit$thetaW
+        thetaZhat = fit$thetaZ
+        iter = fit$iter
+        
+        save(What,Zhat,mhat,thetaWhat,thetaZhat,iter,time,file=fpath)
+      }
+    }    
+
+}  
 
 
 
