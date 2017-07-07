@@ -81,6 +81,11 @@ int main()
 			f = fopen(fname,"w");
 			if ( where == LPC )
 				fputs("module load R\n",f);
+			else if ( where == HPC )
+			{
+				fputs("source /etc/profile.d/modules.sh\n",f);
+				fputs("module load R-3.3.1\n",f);
+			}
 			sprintf(Rname,"%s.R",fname);
 			sprintf(line,"R --vanilla < %s\n",Rname);
 			fputs(line,f);
@@ -145,7 +150,7 @@ int main()
 			fputs("n = 300\n",f);
 			fputs("k = 5\n",f);
 			fputs("v0 = 1:5/35\n",f);
-			fputs("lam = 11:15/8\n",f);
+			fputs("lam = 7:11/5\n",f);
 
 			sprintf(line,"if ( !file.exists(\"%s/%s%03d\") )\n",script,vname,batch+1);
 			fputs(line,f);
@@ -173,6 +178,11 @@ int main()
 		f = fopen(fname,"w");
 		if ( where == LPC )
 			fputs("module load R\n",f);
+		else if ( where == HPC )
+		{
+			fputs("source /etc/profile.d/modules.sh\n",f);
+			fputs("module load R-3.3.1\n",f);
+		}
 		sprintf(Rname,"%s.R",fname);
 		sprintf(line,"R --vanilla < %s\n",Rname);
 		fputs(line,f);

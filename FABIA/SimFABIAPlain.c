@@ -81,6 +81,11 @@ int main()
 			f = fopen(fname,"w");
 			if ( where == LPC )
 				fputs("module load R\n",f);
+			else if ( where == HPC )
+			{
+				fputs("source /etc/profile.d/modules.sh\n",f);
+				fputs("module load R-3.3.1\n",f);
+			}
 			sprintf(Rname,"%s.R",fname);
 			sprintf(line,"R --vanilla < %s\n",Rname);
 			fputs(line,f);
@@ -127,7 +132,7 @@ int main()
 				fputs("overlap = 15\n",f);
 
 			fputs("n = 300\n",f);
-			fputs("thrW = 6:10/4\n",f);
+			fputs("thrW = 3:7/3\n",f);
 			fputs("thrZ = 3:7/20\n",f);
 
 			sprintf(line,"if ( !file.exists(\"%s/%s%03d\") )\n",script,vname,batch+1);
@@ -156,6 +161,11 @@ int main()
 		f = fopen(fname,"w");
 		if ( where == LPC )
 			fputs("module load R\n",f);
+		else if ( where == HPC )
+		{
+			fputs("source /etc/profile.d/modules.sh\n",f);
+			fputs("module load R-3.3.1\n",f);
+		}
 		sprintf(Rname,"%s.R",fname);
 		sprintf(line,"R --vanilla < %s\n",Rname);
 		fputs(line,f);
