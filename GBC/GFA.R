@@ -1,6 +1,6 @@
 # This file contains two functions GFA_MCMC and GFA_EM
 # written by Changgee Chang
-# version: 20170606
+# version: 20170707
 #
 #
 # function GFA_EM: runs EM for GFA
@@ -16,6 +16,8 @@
 # lam: shrinkage parameter for W
 # eta: smoothing parameter for W
 # param: p by 1 vector of parameters nu, n, r, or N (see data types below)
+# center: How to find m; 0->m=0, 1->median, 2->mean
+# smoothing: "Ising" or "MRF"
 # W.init: initial value of W
 # GBC: if TRUE, run GBC instead of GFA
 # u0,u1: if GBC, variances of spike and slab for Z
@@ -28,7 +30,7 @@
 # 2: Negative Binomial - r_j must be provided as param
 # 3: Poisson - N must be provided as param
 
-GFA_EM <- function(X,type,E,L,v0,v1,lam,eta,param,intercept=T,smoothing="MRF",W.init=NULL,GBC=F,u0=v0,u1=v1,zeta=lam,PX=F)
+GFA_EM <- function(X,type,E,L,v0,v1,lam,eta,param,center=0,smoothing="MRF",W.init=NULL,GBC=F,u0=v0,u1=v1,zeta=lam,PX=F)
 {
   p = nrow(X)
   n = ncol(X)
@@ -64,59 +66,36 @@ GFA_EM <- function(X,type,E,L,v0,v1,lam,eta,param,intercept=T,smoothing="MRF",W.
     }
     if ( type[j] == 1 )
     {
-      pbar = pmin(pmax(X[j,]/param[j],1/param[j]/2),1-1/param[j]/2)
+      pbar = pmin(pmax(X[j,],1/4),param[j]-1/4)/param[j]
       Y[j,] = log(pbar/(1-pbar))
       kappa[j,] = X[j,]-param[j]/2
       b[j,] = param[j]
     }
     if ( type[j] == 2 )
     {
-      pbar = pmax(X[j,]/(param[j]+X[j,]),1/(2*param[j]+1))
+      pbar = pmax(X[j,],1/4)/(param[j]+pmax(X[j,],1/4))
       Y[j,] = log(pbar/(1-pbar))
       kappa[j,] = (X[j,]-param[j])/2
       b[j,] = param[j]+X[j,]
     }
     if ( type[j] == 3 )
     {
-      Y[j,] = log(pmax(1/2,X[j,]))
+      Y[j,] = log(pmax(X[j,],1/4))
       psi[j,] = log(param[j])
       kappa[j,] = X[j,]-param[j]/2
       b[j,] = param[j]
     }
   }
   
-  if ( !intercept )
+  # center m
+  if ( center == 0 )
     m = rep(0,p)
+  else if ( center == 1 )
+    m = apply(Y,1,median)
   else
-  {
-    m = apply(X,1,median)
-    for ( j in 1:p )
-    {
-      if ( type[j] == 1 )
-      {
-        if ( m[j] == 0 )
-          pr = 1/param[j]/2
-        else if ( m[j] == param[j] )
-          pr = 1-1/param[j]/2
-        else
-          pr = m[j]/param[j]
-        m[j] = log(pr/(1-pr))
-      }
-      else if ( type[j] == 2 )
-      {
-        if ( m[j] == 0 )
-          pr = 1/(2*param[j]+1)
-        else
-          pr = m[j]/(param[j]+m[j])
-        m[j] = log(pr/(1-pr))
-      }
-      else if ( type[j] == 3 )
-      {
-          m[j] = log(max(1/2,m[j]))
-      }
-    }
-  }
+    m = apply(Y,1,mean)
 
+  # W and Z init
   if ( !is.null(W.init) )
   {
     W = W.init
@@ -217,12 +196,14 @@ GFA_EM <- function(X,type,E,L,v0,v1,lam,eta,param,intercept=T,smoothing="MRF",W.
         s = s / 2
       }
     }
-
+    
+    
     if ( GBC )
     {
       # E-step for delta
       thetaZ = 1/(1+sqrt(u1/u0)*exp(Z^2*diu/2+zeta))
     }    
+  
     
     # M-step for Z
     for ( i in 1:n )
@@ -236,13 +217,8 @@ GFA_EM <- function(X,type,E,L,v0,v1,lam,eta,param,intercept=T,smoothing="MRF",W.
       chizvar = chol( diag(iU,L) + t(W)%*%(W*D) )
       Z[,i] = backsolve(chizvar,forwardsolve(t(chizvar),t(W)%*%c))
     }
+  
     
-    
-    # M-step for m
-    if ( intercept )
-      for ( j in 1:p )
-        m[j] = (-sum(W[j,]*(Z%*%rho[j,])) + sum(psi[j,]*rho[j,]) + sum(kappa[j,])) / sum(rho[j,])
-
     if ( PX )
     {
       # M-step for A
@@ -252,6 +228,7 @@ GFA_EM <- function(X,type,E,L,v0,v1,lam,eta,param,intercept=T,smoothing="MRF",W.
       cA = t(chol(A))
       Z = forwardsolve(cA,Z)
     }
+  
     
     # M-step for W
     for ( j in 1:p )

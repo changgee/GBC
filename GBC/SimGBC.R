@@ -23,6 +23,7 @@ if ( file.exists("/home/changgee/project/GBC/Sim/SimData.R") )
 if ( file.exists("/home/cchan40/project/GBC/Sim/SimData.R") )
   source("/home/cchan40/project/GBC/Sim/SimData.R")
 
+  
 
 SimGBC_BCV <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,intercept=T,smoothing="MRF",thres=0.5,fold=3,batch=0)
 {
@@ -30,6 +31,7 @@ SimGBC_BCV <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,intercept=T,
   D2 = length(lam)
   
   BCV = array(0,c(D1,D2,fold,fold,R))
+  opt_BCV = rep(Inf,R)
   opt_v0 = rep(0,R)
   opt_lam = rep(0,R)
   
@@ -47,57 +49,57 @@ SimGBC_BCV <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,intercept=T,
   {
     data = SimData(seed+batch+r,p,n,type,param,overlap)
 
+    LL = nrow(data$Z)
+    S[[r]] = list()
+    for ( l in 1:LL )
+      S[[r]][[l]] = list(r=which(data$W[,l]!=0),c=which(data$Z[l,]!=0))
+    
     set.seed(seed+batch+r)
     Wfold = fold(p,fold)
     Zfold = fold(n,fold)
     
-    for ( s in 1:fold )
-      for ( t in 1:fold )
+    for ( d1 in 1:D1 )
+      for ( d2 in 1:D2 )
       {
-        Widx = which(Wfold==s)
-        Zidx = which(Zfold==t)
-        XA = data$X[Widx,Zidx]
-        XB = data$X[Widx,-Zidx]
-        XC = data$X[-Widx,Zidx]
-        XD = data$X[-Widx,-Zidx]
-        typeD = data$type[-Widx]
-        paramD = data$param[-Widx]
-        
-        # creating new edge information for XD
-        newidx = rep(0,p)
-        pA = length(Widx)
-        pD = p - pA
-        nA = length(Zidx)
-        nD = n - nA
-        newidx[-Widx] = 1:(pD)
-        EDidx = Wfold[data$E[,1]]!=s & Wfold[data$E[,2]]!=s
-        eD = sum(EDidx)
-        ED = matrix(newidx[data$E[EDidx,]],eD)
-        
-        for ( d1 in 1:D1 )
-          for ( d2 in 1:D2 )
+        for ( s in 1:fold )
+          for ( t in 1:fold )
           {
+            Widx = which(Wfold==s)
+            Zidx = which(Zfold==t)
+            XA = data$X[Widx,Zidx]
+            XB = data$X[Widx,-Zidx]
+            XC = data$X[-Widx,Zidx]
+            XD = data$X[-Widx,-Zidx]
+            typeD = data$type[-Widx]
+            paramD = data$param[-Widx]
+            
+            # creating new edge information for XD
+            pA = length(Widx)
+            pD = p - pA
+            nA = length(Zidx)
+            nD = n - nA
+            newidx = rep(0,p)
+            newidx[-Widx] = 1:(pD)
+            EDidx = Wfold[data$E[,1]]!=s & Wfold[data$E[,2]]!=s
+            eD = sum(EDidx)
+            ED = matrix(newidx[data$E[EDidx,]],eD)
+        
             fit = GFA_EM(XD,typeD,ED,L,v0[d1],k*v0[d1],lam[d2],eta,paramD,intercept,smoothing,GBC=T)
 
-            What = fit$W*(fit$thetaW>thres)
-            Zhat = fit$Z*(fit$thetaZ>thres)
+            WDhat = fit$W*(fit$thetaW>thres)
+            ZDhat = fit$Z*(fit$thetaZ>thres)
             idx = apply(fit$thetaW>thres,2,sum)>0 & apply(fit$thetaZ>thres,1,sum)>0
             
             if ( sum(idx) > 0 )
             {
               What = matrix(What[,idx],nrow=pD)
               Zhat = matrix(Zhat[idx,],ncol=nD)
-              if ( intercept )
-              {
-                What = cbind(fit$m,What)
-                Zhat = rbind(1,Zhat)
-              }
               WWhat = t(What)%*%What
               ZZhat = Zhat%*%t(Zhat)
-              err = XA - (XB%*%t(Zhat))%*%(chol2inv(chol(ZZhat))%*%chol2inv(chol(WWhat)))%*%(t(What)%*%XC)
+              muAhat = (XB%*%t(Zhat))%*%(chol2inv(chol(ZZhat))%*%chol2inv(chol(WWhat)))%*%(t(What)%*%XC)
             }
             else
-              err = XA
+              muAhat = matrix(0,pA,nA)
             BCV[d1,d2,s,t,r] = sum(err^2)
           }
       }
@@ -191,7 +193,7 @@ SimGBC_CCV <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,intercept=T,
 }
 
 
-SimGBC_BIC <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,intercept=T,smoothing="MRF",thres=0.5,batch=0)
+SimGBC_BIC <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,center=1,smoothing="MRF",thres=0.5,batch=0)
 {
   D1 = length(v0)
   D2 = length(lam)
@@ -230,7 +232,7 @@ SimGBC_BIC <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,intercept=T,
         muhat = What %*% Zhat + fit$m
 
         nParam = sum(fit$thetaW>thres) + sum(fit$thetaZ>thres)
-        if ( intercept )
+        if ( center != 0 )
           nParam = nParam + p
 
         BIC[d1,d2,r] = -2*llk(data$X,muhat,data$type,data$param) + nParam*log(n*p)
@@ -264,7 +266,7 @@ SimGBC_BIC <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,intercept=T,
 }
 
 
-SimGBC_Plain <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,intercept=T,smoothing="Ising",thres=0.5,batch=0)
+SimGBC_Plain <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,center=1,smoothing="Ising",thres=0.5,batch=0)
 {
   D1 = length(v0)
   D2 = length(lam)
@@ -295,7 +297,7 @@ SimGBC_Plain <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,intercept=
       fits[[r]][[d1]] = list()
       for ( d2 in 1:D2 )
       {
-        fit = GFA_EM(data$X,data$type,data$E,L,v0[d1],k*v0[d1],lam[d2],eta,data$param,intercept,smoothing,GBC=T)
+        fit = GFA_EM(data$X,data$type,data$E,L,v0[d1],k*v0[d1],lam[d2],eta,data$param,center,smoothing,GBC=T)
         
         Shat = list()
         for ( l in 1:L )
