@@ -259,6 +259,7 @@ GFA_EM <- function(X,type,E,L,v0,v1,lam,eta,param,center=0,m=NULL,smoothing="MRF
   ans
 }
 
+
 init <- function(X,type,param)
 {
   p = nrow(X)

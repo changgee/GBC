@@ -31,7 +31,6 @@ SimGBC_BCV <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,center=1,smo
   D2 = length(lam)
   
   BCV = array(0,c(D1,D2,fold,fold,R))
-  opt_BCV = rep(Inf,R)
   opt_v0 = rep(0,R)
   opt_lam = rep(0,R)
   
@@ -142,7 +141,7 @@ SimGBC_BCV <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,center=1,smo
     MCC[r] = eval$MCC_CE
   }
   
-  list(p=p,n=n,type=type,param=param,overlap=overlap,L=L,k=k,v0=v0,lam=lam,eta=eta,BCV=BCV,S=S,Shat=bclus,CE=CE,FP=FP,FN=FN,SEN=SEN,SPE=SPE,MCC=MCC)
+  list(p=p,n=n,type=type,param=param,overlap=overlap,L=L,k=k,v0=v0,lam=lam,eta=eta,S=S,Shat=bclus,BCV=BCV,CE=CE,FP=FP,FN=FN,SEN=SEN,SPE=SPE,MCC=MCC,opt_v0=opt_v0,opt_lam=opt_lam)
 }
 
 

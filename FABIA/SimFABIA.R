@@ -45,18 +45,19 @@ SimFABIA_BCV <- function(R,seed,p,n,type,param,overlap,L,thrW,thrZ,fold=3,batch=
   
   for ( r in 1:R )
   {
-    data = SimData(seed+batch+r,overlap,sigma2,p)
+    data = SimData(seed+batch+r,p,n,type,param,overlap)
     
-    n = ncol(data$Z)
-    
-    Wfold = fold(p,fold)
-    Zfold = fold(n,fold)
-
     LL = nrow(data$Z)
     S[[r]] = list()
     for ( l in 1:LL )
       S[[r]][[l]] = list(r=which(data$W[,l]!=0),c=which(data$Z[l,]!=0))
     
+    set.seed(seed+batch+r)
+    Wfold = fold(p,fold)
+    Zfold = fold(n,fold)
+
+    m = apply(X,1,median)
+
     for ( s in 1:fold )
       for ( t in 1:fold )
       {
@@ -68,8 +69,10 @@ SimFABIA_BCV <- function(R,seed,p,n,type,param,overlap,L,thrW,thrZ,fold=3,batch=
         XD = data$X[-Widx,-Zidx]
         pD = p - length(Widx)
         nD = n - length(Zidx)
-
-        fit = fabia(XD,L,random=0,center=2)
+        mA = m[Widx]
+        mD = m[-Widx]
+        
+        fit = fabia(XD-mD,L,random=0,center=0)
         
         for ( d1 in 1:D1 )
           for ( d2 in 1:D2 )
@@ -96,10 +99,10 @@ SimFABIA_BCV <- function(R,seed,p,n,type,param,overlap,L,thrW,thrZ,fold=3,batch=
               Zhat = Zhat[idx,]
               WWhat = t(What)%*%What
               ZZhat = Zhat%*%t(Zhat)
-              err = XA - (XB%*%t(Zhat))%*%(chol2inv(chol(ZZhat))%*%chol2inv(chol(WWhat)))%*%(t(What)%*%XC)
+              err = XA - mA - ((XB-mA)%*%t(Zhat))%*%(chol2inv(chol(ZZhat))%*%chol2inv(chol(WWhat)))%*%(t(What)%*%(XC-mD))
             }
             else
-              err = XA
+              err = XA - mA
             BCV[d1,d2,s,t,r] = sum(err^2)
           }
       }
@@ -126,7 +129,7 @@ SimFABIA_BCV <- function(R,seed,p,n,type,param,overlap,L,thrW,thrZ,fold=3,batch=
     MCC[r] = eval$MCC_CE
   }
   
-  list(overlap=overlap,sigma2=sigma2,L=L,thrW=thrW,thrZ=thrZ,S=S,Shat=bclus,CE=CE,FP=FP,FN=FN,SEN=SEN,SPE=SPE,MCC=MCC,BCV=BCV,opt_thrW=opt_thrW,opt_thrZ=opt_thrZ)
+  list(p=p,n=n,type=type,param=param,overlap=overlap,L=L,thrW=thrW,thrZ=thrZ,S=S,Shat=bclus,CE=CE,FP=FP,FN=FN,SEN=SEN,SPE=SPE,MCC=MCC,BCV=BCV,opt_thrW=opt_thrW,opt_thrZ=opt_thrZ)
 }
 
 
@@ -352,7 +355,7 @@ SimFABIA_BIC <- function(R,seed,p,n,type,param,overlap,L,thrW,thrZ,batch=0)
     MCC[r] = eval$MCC_CE
   }
   
-  list(p=p,n=n,type=type,param=param,overlap=overlap,L=L,thrW=thrW,thrZ=thrZ,S=S,CE=CE,FP=FP,FN=FN,SEN=SEN,SPE=SPE,MCC=MCC,BIC=BIC,opt_thrW=opt_thrW,opt_thrZ=opt_thrZ)
+  list(p=p,n=n,type=type,param=param,overlap=overlap,L=L,thrW=thrW,thrZ=thrZ,S=S,Shat=bclus,CE=CE,FP=FP,FN=FN,SEN=SEN,SPE=SPE,MCC=MCC,BIC=BIC,opt_thrW=opt_thrW,opt_thrZ=opt_thrZ)
 }
 
 
