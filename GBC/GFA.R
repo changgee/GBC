@@ -30,7 +30,7 @@
 # 2: Negative Binomial - r_j must be provided as param
 # 3: Poisson - N must be provided as param
 
-GFA_EM <- function(X,type,E,L,v0,v1,lam,eta,param,center=0,smoothing="MRF",W.init=NULL,GBC=F,u0=v0,u1=v1,zeta=lam,PX=F)
+GFA_EM <- function(X,type,E,L,v0,v1,lam,eta,param,center=0,m=NULL,smoothing="MRF",W.init=NULL,GBC=F,u0=v0,u1=v1,zeta=lam,PX=F)
 {
   p = nrow(X)
   n = ncol(X)
@@ -89,7 +89,12 @@ GFA_EM <- function(X,type,E,L,v0,v1,lam,eta,param,center=0,smoothing="MRF",W.ini
   
   # center m
   if ( center == 0 )
-    m = rep(0,p)
+  {
+    if ( is.null(m) )
+      m = rep(0,p)
+    else if ( length(m) == 1 )
+      m = rep(m,p)
+  }
   else if ( center == 1 )
     m = apply(Y,1,median)
   else
