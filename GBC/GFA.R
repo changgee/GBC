@@ -53,7 +53,7 @@ GFA_EM <- function(X,type,E,L,v0,v1,lam,eta,param,center=0,m=NULL,smoothing="MRF
   # normalization
   
   # initialization
-  Y = matrix(0,p,n)
+  Y = init(X,type,param)
   psi = matrix(0,p,n)
   kappa = matrix(0,p,n)
   b = matrix(0,p,n)
@@ -61,27 +61,20 @@ GFA_EM <- function(X,type,E,L,v0,v1,lam,eta,param,center=0,m=NULL,smoothing="MRF
   {
     if ( type[j] == 0 )
     {
-      Y[j,] = X[j,]
       psi[j,] = X[j,]
     }
     if ( type[j] == 1 )
     {
-      pbar = pmin(pmax(X[j,],1/4),param[j]-1/4)/param[j]
-      Y[j,] = log(pbar/(1-pbar))
       kappa[j,] = X[j,]-param[j]/2
       b[j,] = param[j]
     }
     if ( type[j] == 2 )
     {
-      pbar = pmax(X[j,],1/4)/(param[j]+pmax(X[j,],1/4))
-      Y[j,] = log(pbar/(1-pbar))
       kappa[j,] = (X[j,]-param[j])/2
       b[j,] = param[j]+X[j,]
     }
     if ( type[j] == 3 )
     {
-      Y[j,] = log(pmax(X[j,],1/4))
-      psi[j,] = log(param[j])
       kappa[j,] = X[j,]-param[j]/2
       b[j,] = param[j]
     }
@@ -266,6 +259,36 @@ GFA_EM <- function(X,type,E,L,v0,v1,lam,eta,param,center=0,m=NULL,smoothing="MRF
   ans
 }
 
+init <- function(X,type,param)
+{
+  p = nrow(X)
+  n = ncol(X)
+  
+  Y = matrix(0,p,n)
+  for ( j in 1:p )
+  {
+    if ( type[j] == 0 )
+    {
+      Y[j,] = X[j,]
+    }
+    if ( type[j] == 1 )
+    {
+      pbar = pmin(pmax(X[j,],1/4),param[j]-1/4)/param[j]
+      Y[j,] = log(pbar/(1-pbar))
+    }
+    if ( type[j] == 2 )
+    {
+      pbar = pmax(X[j,],1/4)/(param[j]+pmax(X[j,],1/4))
+      Y[j,] = log(pbar/(1-pbar))
+    }
+    if ( type[j] == 3 )
+    {
+      Y[j,] = log(pmax(X[j,],1/4))
+      psi[j,] = log(param[j])
+    }
+  }
+  Y
+}
 
 
 # function GFA_MCMC: runs MCMC for GFA

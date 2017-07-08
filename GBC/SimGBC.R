@@ -25,7 +25,7 @@ if ( file.exists("/home/cchan40/project/GBC/Sim/SimData.R") )
 
   
 
-SimGBC_BCV <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,intercept=T,smoothing="MRF",thres=0.5,fold=3,batch=0)
+SimGBC_BCV <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,center=1,smoothing="MRF",thres=0.5,fold=3,batch=0)
 {
   D1 = length(v0)
   D2 = length(lam)
@@ -58,6 +58,14 @@ SimGBC_BCV <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,intercept=T,
     Wfold = fold(p,fold)
     Zfold = fold(n,fold)
     
+    Y = init(data$X,data$type,data$param)
+    if ( center == 0 )
+      m = rep(0,p)
+    if ( center == 1 )
+      m = apply(Y,1,median)
+    if ( center == 2 )
+      m = apply(Y,1,mean)
+    
     for ( d1 in 1:D1 )
       for ( d2 in 1:D2 )
       {
@@ -67,11 +75,15 @@ SimGBC_BCV <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,intercept=T,
             Widx = which(Wfold==s)
             Zidx = which(Zfold==t)
             XA = data$X[Widx,Zidx]
-            XB = data$X[Widx,-Zidx]
-            XC = data$X[-Widx,Zidx]
+            YB = Y[Widx,-Zidx]
+            YC = Y[-Widx,Zidx]
             XD = data$X[-Widx,-Zidx]
+            typeA = data$type[Widx]
             typeD = data$type[-Widx]
+            paramA = data$param[Widx]
             paramD = data$param[-Widx]
+            mA = m[Widx]
+            mD = m[-Widx]
             
             # creating new edge information for XD
             pA = length(Widx)
@@ -84,7 +96,7 @@ SimGBC_BCV <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,intercept=T,
             eD = sum(EDidx)
             ED = matrix(newidx[data$E[EDidx,]],eD)
         
-            fit = GFA_EM(XD,typeD,ED,L,v0[d1],k*v0[d1],lam[d2],eta,paramD,intercept,smoothing,GBC=T)
+            fit = GFA_EM(XD,typeD,ED,L,v0[d1],k*v0[d1],lam[d2],eta,paramD,0,mD,smoothing,GBC=T)
 
             WDhat = fit$W*(fit$thetaW>thres)
             ZDhat = fit$Z*(fit$thetaZ>thres)
@@ -92,26 +104,50 @@ SimGBC_BCV <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,intercept=T,
             
             if ( sum(idx) > 0 )
             {
-              What = matrix(What[,idx],nrow=pD)
-              Zhat = matrix(Zhat[idx,],ncol=nD)
+              What = matrix(WDhat[,idx],nrow=pD)
+              Zhat = matrix(ZDhat[idx,],ncol=nD)
               WWhat = t(What)%*%What
               ZZhat = Zhat%*%t(Zhat)
-              muAhat = (XB%*%t(Zhat))%*%(chol2inv(chol(ZZhat))%*%chol2inv(chol(WWhat)))%*%(t(What)%*%XC)
+              iWZ = t(Zhat)
+              muAhat = ((YB-mA)%*%t(Zhat))%*%(chol2inv(chol(ZZhat))%*%chol2inv(chol(WWhat)))%*%(t(What)%*%(YC-mD)) + mA
             }
             else
-              muAhat = matrix(0,pA,nA)
-            BCV[d1,d2,s,t,r] = sum(err^2)
+              muAhat = matrix(mA,pA,nA)
+            BCV[d1,d2,s,t,r] = -llk(XA,muAhat,typeA,paramA)
           }
       }
     
   }
   
-  list(p=p,n=n,type=type,param=param,overlap=overlap,L=L,k=k,v0=v0,lam=lam,eta=eta,BCV=BCV)
+  sBCV = apply(BCV[,,,,r],c(1,2),sum)
+  opt = which.min(sBCV)
+  opt1 = (opt-1)%%D1+1
+  opt2 = (opt-1)%/%D1+1
+  opt_v0[r] = v0[opt1]
+  opt_lam[r] = lam[opt2]
+  
+  opt_fit = GFA_EM(data$X,data$type,data$E,L,opt_v0[r],k*opt_v0[r],opt_lam[r],eta,data$param,0,m,smoothing,GBC=T)
+  
+  Shat = list()
+  for ( l in 1:L )
+    Shat[[l]] = list(r=which(opt_fit$thetaW[,l]>thres),c=which(opt_fit$thetaZ[l,]>thres))
+  
+  eval = gbcmetric(Shat,S[[r]],p,n)
+  
+  bclus[[r]] = Shat
+  CE[r] = eval$CE
+  FP[r] = eval$FP_CE
+  FN[r] = eval$FN_CE
+  SEN[r] = eval$SEN_CE
+  SPE[r] = eval$SPE_CE
+  MCC[r] = eval$MCC_CE
+  
+  list(p=p,n=n,type=type,param=param,overlap=overlap,L=L,k=k,v0=v0,lam=lam,eta=eta,BCV=BCV,S=S,Shat=bclus,CE=CE,FP=FP,FN=FN,SEN=SEN,SPE=SPE,MCC=MCC)
 }
 
 
 
-SimGBC_CCV <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,intercept=T,smoothing="MRF",thres=0.5,fold=3,batch=0)
+SimGBC_CCV <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,center=1,smoothing="MRF",thres=0.5,fold=3,batch=0)
 {
   D1 = length(v0)
   D2 = length(lam)
@@ -188,6 +224,22 @@ SimGBC_CCV <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,intercept=T,
       
     } 
   }
+  
+  ###################
+  
+  Shat = list()
+  for ( l in 1:L )
+    Shat[[l]] = list(r=which(opt_fit$thetaW[,l]>thres),c=which(opt_fit$thetaZ[l,]>thres))
+  
+  eval = gbcmetric(Shat,S[[r]],p,n)
+  
+  bclus[[r]] = Shat
+  CE[r] = eval$CE
+  FP[r] = eval$FP_CE
+  FN[r] = eval$FN_CE
+  SEN[r] = eval$SEN_CE
+  SPE[r] = eval$SPE_CE
+  MCC[r] = eval$MCC_CE
   
   list(p=p,n=n,type=type,param=param,overlap=overlap,L=L,k=k,v0=v0,lam=lam,eta=eta,CCV=CCV)
 }
