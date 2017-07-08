@@ -284,7 +284,6 @@ init <- function(X,type,param)
     if ( type[j] == 3 )
     {
       Y[j,] = log(pmax(X[j,],1/4))
-      psi[j,] = log(param[j])
     }
   }
   Y
