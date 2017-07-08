@@ -1,5 +1,10 @@
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
+
+#define HPC 0
+#define LPC 1
+#define Emory 2
 
 int main()
 {
@@ -15,7 +20,7 @@ int main()
 	char src[50];
 	char vname[50];
 	FILE *f, *g, *h, *m;
-	int K, s, batch_size, batch, R;
+	int K, s, batch_size, batch, R, where;
 
 	K = 3;
 	R = 100;
@@ -24,7 +29,21 @@ int main()
 	strcpy(method,"GBC");
 	strcpy(crit,"BCV");
 
-	strcpy(master,"/home/cchan40/project/GBC");
+	if ( access("/home/cchan40",X_OK) == 0 )
+	{
+		where = Emory;
+		strcpy(master,"/home/cchan40/project/GBC");
+	}
+	else if ( access("/project/qlonglab/changgee",X_OK) == 0 )
+	{
+		where = HPC;
+		strcpy(master,"/home/changgee/project/GBC");
+	}
+	else
+	{
+		where = LPC;
+		strcpy(master,"/home/changgee/project/GBC");
+	}
 	sprintf(home,"%s/GBC",master);
 	sprintf(script,"%s/Sim%s",home,crit);
 	strcpy(src,"SimGBC.R");
@@ -37,7 +56,7 @@ int main()
 	m = fopen(fname,"w");
 	chmod(fname,0755);
 
-	for ( s=0 ; s<24 ; s++ )
+	for ( s=0 ; s<30 ; s++ )
 	{
 		sprintf(acronym,"%s%s%d%02d",method,crit,K,s+1);
 		sprintf(vname,"res%s",acronym);
@@ -52,10 +71,22 @@ int main()
 		for ( batch=0 ; batch<R ; batch+=batch_size )
 		{
 			sprintf(fname,"%s/%s%03d",script,acronym,batch+1);
-			sprintf(line,"qsub -q fruit.q %s\n",fname);
+			if ( where == Emory )
+				sprintf(line,"qsub -q fruit.q %s\n",fname);
+			else if ( where == HPC )
+				sprintf(line,"bsub -q qlonglab -e %s.e -o %s.o < %s\n",fname,fname,fname);
+			else
+				sprintf(line,"bsub -q cceb_normal -e %s.e -o %s.o < %s\n",fname,fname,fname);
 			fputs(line,g);
 
 			f = fopen(fname,"w");
+			if ( where == LPC )
+				fputs("module load R\n",f);
+			else if ( where == HPC )
+			{
+				fputs("source /etc/profile.d/modules.sh\n",f);
+				fputs("module load R-3.3.1\n",f);
+			}
 			sprintf(Rname,"%s.R",fname);
 			sprintf(line,"R --vanilla < %s\n",Rname);
 			fputs(line,f);
@@ -67,12 +98,12 @@ int main()
 			sprintf(line,"source(\"%s/%s\")\n",home,src);
 			fputs(line,f);
 
-			if ( s/8 == 0 )
+			if ( s/10 == 0 )
 			{
 				fputs("eta = 0\n",f);
 				fputs("smoothing = \"Ising\"\n",f);
 			}
-			else if ( s/8 == 1 )
+			else if ( s/10 == 1 )
 			{
 				fputs("eta = 0.1\n",f);
 				fputs("smoothing = \"Ising\"\n",f);
@@ -83,25 +114,33 @@ int main()
 				fputs("smoothing = \"MRF\"\n",f);
 			}
 
-			if ( (s/2)%4 == 2 )
-				fputs("p = 10000\n",f);
+			if ( (s/2)%5 == 2 )
+				fputs("p = 5000\n",f);
 			else
 				fputs("p = 1000\n",f);
 
-			if ( (s/2)%4 <= 2 )
+			if ( (s/2)%5 != 3 )
 				fputs("L = 4\n",f);
 			else
 				fputs("L = 5\n",f);
 
-			if ( (s/2)%4 == 0 )
+			if ( (s/2)%5 == 0 )
 			{
-				fputs("sigma2 = 9\n",f);
+				fputs("type = 0\n",f);
+				fputs("param = 0.25\n",f);
 				fputs("seed = 100\n",f);
+			}
+			else if ( (s/2)%5 < 4 )
+			{
+				fputs("type = 0\n",f);
+				fputs("param = 1\n",f);
+				fputs("seed = 200\n",f);
 			}
 			else
 			{
-				fputs("sigma2 = 25\n",f);
-				fputs("seed = 200\n",f);
+				fputs("type = NULL\n",f);
+				fputs("param = NULL\n",f);
+				fputs("seed = 100\n",f);
 			}
 
 			if ( s%2 == 0 )
@@ -109,15 +148,19 @@ int main()
 			else
 				fputs("overlap = 15\n",f);
 
+			fputs("n = 300\n",f);
 			fputs("k = 5\n",f);
-			fputs("v0 = 3:7/30\n",f);
-			fputs("lam = 5:9/8\n",f);
+			fputs("v0 = 1:5/30\n",f);
+			fputs("lam = 6:10/4\n",f);
 
-			sprintf(line,"%s = SimGBC_%s(%d,seed,p,overlap,sigma2,L,k,v0,lam,eta,intercept=F,smoothing=smoothing,fold=%d,batch=%d)\n",vname,crit,batch_size,K,batch);
+			sprintf(line,"if ( !file.exists(\"%s/%s%03d\") )\n",script,vname,batch+1);
 			fputs(line,f);
-
-			sprintf(line,"save(%s,file=\"%s/%s%03d\")\n",vname,script,vname,batch+1);
+			fputs("{\n",f);
+			sprintf(line,"  %s = SimGBC_%s(%d,seed,p,n,type,param,overlap,L,k,v0,lam,eta,smoothing=smoothing,batch=%d)\n",vname,crit,batch_size,batch);
 			fputs(line,f);
+			sprintf(line,"  save(%s,file=\"%s/%s%03d\")\n",vname,script,vname,batch+1);
+			fputs(line,f);
+			fputs("}\n",f);
 			fclose(f);
 		}
 
@@ -125,10 +168,22 @@ int main()
 
 
 		sprintf(fname,"%s/%sMERGE",script,acronym);
-		sprintf(line,"qsub -q fruit.q %s\n",fname);
+		if ( where == Emory )
+			sprintf(line,"qsub -q fruit.q %s\n",fname);
+		else if ( where == HPC )
+			sprintf(line,"bsub -q qlonglab -e %s.e -o %s.o < %s\n",fname,fname,fname);
+		else
+			sprintf(line,"bsub -q cceb_normal -e %s.e -o %s.o < %s\n",fname,fname,fname);
 		fputs(line,m);
 
 		f = fopen(fname,"w");
+		if ( where == LPC )
+			fputs("module load R\n",f);
+		else if ( where == HPC )
+		{
+			fputs("source /etc/profile.d/modules.sh\n",f);
+			fputs("module load R-3.3.1\n",f);
+		}
 		sprintf(Rname,"%s.R",fname);
 		sprintf(line,"R --vanilla < %s\n",Rname);
 		fputs(line,f);
@@ -185,6 +240,7 @@ int main()
 	fclose(h);
 	fclose(m);
 }
+
 
 
 
