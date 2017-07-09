@@ -105,8 +105,12 @@ SimGBC_BCV <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,center=1,smo
             
             What = matrix(WDhat[,idx],nrow=pD)
             Zhat = matrix(ZDhat[idx,],ncol=nD)
-            muAhat = ((YB-mA)%*%ginv(Zhat))%*%(ginv(What)%*%(YC-mD)) + mA
-
+            
+            if ( sum(idx) == 0 )
+              muAhat = matrix(mA,pA,nA)
+            else
+              muAhat = ((YB-mA)%*%ginv(Zhat))%*%(ginv(What)%*%(YC-mD)) + mA
+            
             BCV[d1,d2,s,t,r] = -llk(XA,muAhat,typeA,paramA)
           }
       }
