@@ -23,6 +23,7 @@ if ( file.exists("/home/changgee/project/GBC/Sim/SimData.R") )
 if ( file.exists("/home/cchan40/project/GBC/Sim/SimData.R") )
   source("/home/cchan40/project/GBC/Sim/SimData.R")
 
+library(MASS)
   
 
 SimGBC_BCV <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,center=1,smoothing="MRF",thres=0.5,fold=3,batch=0)
@@ -102,17 +103,10 @@ SimGBC_BCV <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,center=1,smo
             ZDhat = fit$Z*(fit$thetaZ>thres)
             idx = apply(fit$thetaW>thres,2,sum)>0 & apply(fit$thetaZ>thres,1,sum)>0
             
-            if ( sum(idx) > 0 )
-            {
-              What = matrix(WDhat[,idx],nrow=pD)
-              Zhat = matrix(ZDhat[idx,],ncol=nD)
-              WWhat = t(What)%*%What
-              ZZhat = Zhat%*%t(Zhat)
-              iWZ = t(Zhat)
-              muAhat = ((YB-mA)%*%t(Zhat))%*%(chol2inv(chol(ZZhat))%*%chol2inv(chol(WWhat)))%*%(t(What)%*%(YC-mD)) + mA
-            }
-            else
-              muAhat = matrix(mA,pA,nA)
+            What = matrix(WDhat[,idx],nrow=pD)
+            Zhat = matrix(ZDhat[idx,],ncol=nD)
+            muAhat = ((YB-mA)%*%ginv(Zhat))%*%(ginv(What)%*%(YC-mD)) + mA
+
             BCV[d1,d2,s,t,r] = -llk(XA,muAhat,typeA,paramA)
           }
       }

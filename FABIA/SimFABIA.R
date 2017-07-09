@@ -23,6 +23,7 @@ if ( file.exists("/home/changgee/project/GBC/Sim/SimData.R") )
 if ( file.exists("/home/cchan40/project/GBC/Sim/SimData.R") )
   source("/home/cchan40/project/GBC/Sim/SimData.R")
 
+library(MASS)
 
 SimFABIA_BCV <- function(R,seed,p,n,type,param,overlap,L,thrW,thrZ,fold=3,batch=0)
 {
@@ -80,7 +81,6 @@ SimFABIA_BCV <- function(R,seed,p,n,type,param,overlap,L,thrW,thrZ,fold=3,batch=
             fabia_bic = extractBic(fit,thrW[d1],thrZ[d2])
             What = matrix(0,pD,L)
             Zhat = matrix(0,L,nD)
-            idx = rep(T,L)
             for ( l in 1:L )
             {
               Widx = fabia_bic$numn[l,1]$numng
@@ -90,19 +90,10 @@ SimFABIA_BCV <- function(R,seed,p,n,type,param,overlap,L,thrW,thrZ,fold=3,batch=
                 What[Widx,l] = fit@L[Widx,l]
                 Zhat[l,Zidx] = fit@Z[l,Zidx]
               }
-              else
-                idx[l] = F
             }
-            if ( sum(idx) > 0 )
-            {
-              What = What[,idx]
-              Zhat = Zhat[idx,]
-              WWhat = t(What)%*%What
-              ZZhat = Zhat%*%t(Zhat)
-              err = XA - mA - ((XB-mA)%*%t(Zhat))%*%(chol2inv(chol(ZZhat))%*%chol2inv(chol(WWhat)))%*%(t(What)%*%(XC-mD))
-            }
-            else
-              err = XA - mA
+
+            err = XA - mA - ((XB-mA)%*%ginv(Zhat))%*%(ginv(What)%*%(XC-mD))
+            
             BCV[d1,d2,s,t,r] = sum(err^2)
           }
       }
