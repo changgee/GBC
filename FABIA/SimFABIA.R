@@ -57,7 +57,7 @@ SimFABIA_BCV <- function(R,seed,p,n,type,param,overlap,L,thrW,thrZ,fold=3,batch=
     Wfold = fold(p,fold)
     Zfold = fold(n,fold)
 
-    m = apply(X,1,median)
+    m = apply(data$X,1,median)
 
     for ( s in 1:fold )
       for ( t in 1:fold )
