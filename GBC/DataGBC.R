@@ -220,7 +220,7 @@ DataGBC_BIC <- function(X,E,L,k,v0,lam,eta,param,intercept=F,smoothing="MRF",thr
 
 
 
-DataGBC_Plain <- function(dpath,opath,name,L,k,v0,lam,eta,intercept=T,smoothing="MRF")
+DataGBC_Plain <- function(dpath,opath,name,L,k,v0,lam,eta,center=1,smoothing="MRF")
 {
   p = nrow(X)
   n = ncol(X)
@@ -236,7 +236,7 @@ DataGBC_Plain <- function(dpath,opath,name,L,k,v0,lam,eta,intercept=T,smoothing=
       fpath = paste(opath,fname,sep="/")
       if ( !file.exists(fpath) )
       {
-        time = system.time(fit <- GFA_EM(X,type,E,L,v0[d1],k*v0[d1],lam[d2],eta,param,intercept,smoothing,GBC=T))
+        time = system.time(fit <- GFA_EM(X,type,E,L,v0[d1],k*v0[d1],lam[d2],eta,param,center,smoothing=smoothing,GBC=T))
         
         What = fit$W
         Zhat = fit$Z
