@@ -220,16 +220,14 @@ DataGBC_BIC <- function(X,E,L,k,v0,lam,eta,param,intercept=F,smoothing="MRF",thr
 
 
 
-DataGBC_Plain <- function(ipath,opath,name,L,k,v0,lam,eta,intercept=T,smoothing="MRF")
+DataGBC_Plain <- function(dpath,opath,name,L,k,v0,lam,eta,intercept=T,smoothing="MRF")
 {
   p = nrow(X)
   n = ncol(X)
   D1 = length(v0)
   D2 = length(lam)
 
-  fname = paste(name,"dat",sep=".")
-  fpath = paste(ipath,fname,sep="/")
-  load(fpath)
+  load(dpath)
   
   for ( d1 in 1:D1 )
     for ( d2 in 1:D2 )
