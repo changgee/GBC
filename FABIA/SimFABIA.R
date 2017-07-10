@@ -317,7 +317,7 @@ SimFABIA_BIC <- function(R,seed,p,n,type,param,overlap,L,thrW,thrZ,batch=0)
         
         muhat = What %*% Zhat + fit.m
         
-        BIC[d1,d2,r] = -2*llk(data$X,muhat,data$type,data$param) + nParam*log(n*p)
+        BIC[d1,d2,r] = n*p*log(mean((data$X-muhat)^2)) + nParam*log(n*p)
         
         if ( opt_BIC[r] > BIC[d1,d2,r] )
         {
