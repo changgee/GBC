@@ -75,6 +75,7 @@ GFA_EM <- function(X,type,E,L,v0,v1,lam,eta,param,center=0,m=NULL,smoothing="MRF
     }
     if ( type[j] == 3 )
     {
+      psi[j,] = log(param[j])
       kappa[j,] = X[j,]-param[j]/2
       b[j,] = param[j]
     }
