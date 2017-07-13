@@ -132,8 +132,8 @@ int main()
 				fputs("overlap = 15\n",f);
 
 			fputs("n = 300\n",f);
-			fputs("thrW = 3:7/3\n",f);
-			fputs("thrZ = 3:7/20\n",f);
+			fputs("thrW = 2:6/2\n",f);
+			fputs("thrZ = 1:5/10\n",f);
 
 			sprintf(line,"if ( !file.exists(\"%s/%s%03d\") )\n",script,vname,batch+1);
 			fputs(line,f);

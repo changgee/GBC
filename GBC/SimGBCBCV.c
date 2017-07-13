@@ -150,8 +150,8 @@ int main()
 
 			fputs("n = 300\n",f);
 			fputs("k = 5\n",f);
-			fputs("v0 = 1:5/30\n",f);
-			fputs("lam = 6:10/4\n",f);
+			fputs("v0 = 4:8/60\n",f);
+			fputs("lam = 10:14/6\n",f);
 
 			sprintf(line,"if ( !file.exists(\"%s/%s%03d\") )\n",script,vname,batch+1);
 			fputs(line,f);
