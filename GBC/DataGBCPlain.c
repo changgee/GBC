@@ -55,9 +55,9 @@ int main()
 
 	for ( L=3 ; L<=10 ; L++ )
 	for ( k=5 ; k<=15 ; k+=5 )
-	for ( eta=0.00 ; eta<=0.01 ; eta+=0.1 )
+	for ( eta=0.00 ; eta<=0.21 ; eta+=0.05 )
 	{
-		sprintf(acronym,"%s%s_%s_L%02d_k%02d_eta%.1f",method,crit,data,L,k,eta);
+		sprintf(acronym,"%s%s_%s_L%02d_k%02d_eta%.2f",method,crit,data,L,k,eta);
 		sprintf(vname,"res%s",acronym);
 		sprintf(fname,"%s/%s",script,acronym);
 		if ( where == Emory )
@@ -93,9 +93,9 @@ int main()
 		fputs(line,f);
 		sprintf(line,"k = %d\n",k);
 		fputs(line,f);
-		sprintf(line,"v0 = 1:10/50\n");
+		sprintf(line,"v0 = 1:20/50\n");
 		fputs(line,f);
-		sprintf(line,"lam = 1:10/25\n");
+		sprintf(line,"lam = 1:15/25\n");
 		fputs(line,f);
 		sprintf(line,"eta = %.01f\n",eta);
 		fputs(line,f);

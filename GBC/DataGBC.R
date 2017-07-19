@@ -220,7 +220,7 @@ DataGBC_BIC <- function(X,E,L,k,v0,lam,eta,param,intercept=F,smoothing="MRF",thr
 
 
 
-DataGBC_Plain <- function(dpath,opath,name,L,k,v0,lam,eta,center=1,smoothing="MRF")
+DataGBC_Plain <- function(dpath,opath,name,L,k,v0,lam,eta,center=1,smoothing="Ising")
 {
   p = nrow(X)
   n = ncol(X)

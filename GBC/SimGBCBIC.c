@@ -126,7 +126,7 @@ int main()
 			if ( (s/2)%5 == 0 )
 			{
 				fputs("type = 0\n",f);
-				fputs("param = 0.25\n",f);
+				fputs("param = 4\n",f);
 				fputs("seed = 100\n",f);
 			}
 			else if ( (s/2)%5 < 4 )
