@@ -53,7 +53,7 @@ int main()
 	h = fopen(fname,"w");
 	chmod(fname,0755);
 
-	for ( L=3 ; L<=10 ; L++ )
+	for ( L=3 ; L<=7 ; L++ )
 	for ( k=5 ; k<=15 ; k+=5 )
 	for ( eta=0.00 ; eta<=0.21 ; eta+=0.05 )
 	{
@@ -97,7 +97,7 @@ int main()
 		fputs(line,f);
 		sprintf(line,"lam = 1:15/25\n");
 		fputs(line,f);
-		sprintf(line,"eta = %.01f\n",eta);
+		sprintf(line,"eta = %.02f\n",eta);
 		fputs(line,f);
 
 		sprintf(line,"dpath = '%s'\n",datapath);
