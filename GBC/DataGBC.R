@@ -174,66 +174,65 @@ DataGBC_CCV <- function(X,E,L,k,v0,lam,eta,param,intercept=F,smoothing="Ising",t
   list(L=L,k=k,v0=v0,lam=lam,eta=eta,fold=fold,CCV=CCV,opt_v0=opt_v0,opt_lam=opt_lam,opt_fit=fit,opt_biclus=Shat,time=as.numeric(time[1]))
 }  
 
-DataGBC_BIC <- function(X,E,L,k,v0,lam,eta,param,intercept=F,smoothing="MRF",thres=0.5)
+DataGBC_BIC <- function(datapath,outpath,name,L,k,v0,lam,eta,smoothing="Ising",thres=0.5)
 {
-  p = nrow(X)
-  n = ncol(X)
-  D1 = length(v0)
-  D2 = length(lam)
+  D1 = length(L)
+  D2 = length(k)
+  D3 = length(v0)
+  D4 = length(lam)
   
-  BIC = matrix(0,D1,D2)
-  
-  type = rep(0,p)
-
+  BIC = array(0,c(D1,D2,D3,D4))
   opt_BIC = Inf
+
+  load(datapath)
+
   for ( d1 in 1:D1 )
     for ( d2 in 1:D2 )
-    {
-      time = system.time(fit <- GFA_EM(X,type,E,L,v0[d1],k*v0[d1],lam[d2],eta,param,intercept,smoothing,GBC=T))
+      for ( d3 in 1:D3 )
+        for ( d4 in 1:D4 )
+        {
+          fname = sprintf("res_%s_GBC_%02d_%02d_%.2f_%.2f_%.2f",name,L[d1],k[d2],v0[d3],lam[d4],eta)
+          fpath = paste(outpath,fname,sep="/")
+          load(fpath)
+          
+          What = What*(thetaWhat>thres)
+          Zhat = Zhat*(thetaZhat>thres)
+          muhat = What %*% Zhat + mhat
+          
+          nParam = sum(thetaWhat>thres) + sum(thetaZhat>thres)
+          if ( center != 0 )
+            nParam = nParam + p
+          
+          BIC[d1,d2,d3,d4] = -2*llk(X,muhat,type,param) + nParam*log(n*p)
+          
+          if ( opt_BIC > BIC[d1,d2,d3,d4] )
+          {
+            opt_BIC = BIC[d1,d2,d3,d4]
+            opt_L = L[d1]
+            opt_k = k[d2]
+            opt_v0 = v0[d3]
+            opt_lam = lam[d4]
+          }
+        }
 
-      What = fit$W*(fit$thetaW>thres)
-      Zhat = fit$Z*(fit$thetaZ>thres)
-      
-      nParam = sum(fit$thetaW>thres) + sum(fit$thetaZ>thres)
-      if ( intercept )
-        nParam = nParam + p
-      
-      BIC[d1,d2] = n*sum(log(apply((X-fit$m-What%*%Zhat)^2,1,mean))) + nParam*log(n*p)
-
-      if ( opt_BIC > BIC[d1,d2] )
-      {
-        opt_BIC = BIC[d1,d2]
-        opt_v0 = v0[d1]
-        opt_lam = lam[d2]
-        opt_fit = fit
-        opt_time = as.numeric(time[1])
-      }
-    }
-
-  Shat = list()
-  for ( l in 1:L )
-    Shat[[l]] = list(r=which(opt_fit$thetaW[,l]>thres),c=which(opt_fit$thetaZ[l,]>thres))
-  
-  list(L=L,k=k,v0=v0,lam=lam,eta=eta,BIC=BIC,opt_v0=opt_v0,opt_lam=opt_lam,opt_fit=opt_fit,opt_biclus=Shat,time=opt_time)
+  list(name=name,L=L,k=k,v0=v0,lam=lam,eta=eta,BIC=BIC,opt_BIC=opt_BIC,opt_L=opt_L,opt_k=opt_k,opt_v0=opt_v0,opt_lam=opt_lam)
 }  
 
 
 
 
-DataGBC_Plain <- function(dpath,opath,name,L,k,v0,lam,eta,center=1,smoothing="Ising")
+DataGBC_Plain <- function(datapath,outpath,name,L,k,v0,lam,eta,center=1,smoothing="Ising")
 {
-  p = nrow(X)
-  n = ncol(X)
   D1 = length(v0)
   D2 = length(lam)
 
-  load(dpath)
+  load(datapath)
   
   for ( d1 in 1:D1 )
     for ( d2 in 1:D2 )
     {
       fname = sprintf("res_%s_GBC_%02d_%02d_%.2f_%.2f_%.2f",name,L,k,v0[d1],lam[d2],eta)
-      fpath = paste(opath,fname,sep="/")
+      fpath = paste(outpath,fname,sep="/")
       if ( !file.exists(fpath) )
       {
         time = system.time(fit <- GFA_EM(X,type,E,L,v0[d1],k*v0[d1],lam[d2],eta,param,center,smoothing=smoothing,GBC=T))
