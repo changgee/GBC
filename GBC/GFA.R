@@ -104,8 +104,12 @@ GFA_EM <- function(X,type,E,L,v0,v1,lam,eta,param,center=0,m=NULL,smoothing="MRF
   else
   {
     init_svd = svd(Y-m,L,L)
-    W = init_svd$u %*% diag(sqrt(init_svd$d[1:L]),L)    
-    Z = diag(sqrt(init_svd$d[1:L]),L) %*% t(init_svd$v)
+#    W = init_svd$u %*% diag(sqrt(init_svd$d[1:L]),L)    
+#    Z = diag(sqrt(init_svd$d[1:L]),L) %*% t(init_svd$v)
+    vm = varimax(init_svd$u %*% diag(init_svd$d[1:L],L))
+    sc = sqrt(apply(vm$loadings^2,2,sum))
+    Z = t(init_svd$v%*%vm$rotmat) * sqrt(sc)
+    W = matrix(vm$loadings,p) / rep(sqrt(sc),each=p)
   }
 
   rho = matrix(0,p,n)
@@ -275,17 +279,17 @@ init <- function(X,type,param)
     }
     if ( type[j] == 1 )
     {
-      pbar = pmin(pmax(X[j,],1/4),param[j]-1/4)/param[j]
+      pbar = pmin(pmax(X[j,],1/3),param[j]-1/3)/param[j]
       Y[j,] = log(pbar/(1-pbar))
     }
     if ( type[j] == 2 )
     {
-      pbar = pmax(X[j,],1/4)/(param[j]+pmax(X[j,],1/4))
+      pbar = pmax(X[j,],1/3)/(param[j]+pmax(X[j,],1/3))
       Y[j,] = log(pbar/(1-pbar))
     }
     if ( type[j] == 3 )
     {
-      Y[j,] = log(pmax(X[j,],1/4))
+      Y[j,] = log(pmax(X[j,],1))
     }
   }
   Y

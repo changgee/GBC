@@ -5,7 +5,7 @@ SimData <- function(seed,p,n,type,param,overlap,Edensity=0.05)
   size = 50
   L = 4
 
-  meanWZ = 1.2
+  meanWZ = 1.5
   sigmaWZ = 0.1
 
   set.seed(seed)
@@ -16,11 +16,13 @@ SimData <- function(seed,p,n,type,param,overlap,Edensity=0.05)
     param = rep(0,p)
     for ( i in 1:p )
       if ( type[i] == 0 )
-        param[i] = runif(1,1,2)
-      else if ( type[i] < 3 )
-        param[i] = sample(1:20,1)
+        param[i] = 16
+      else if ( type[i] == 1 )
+        param[i] = sample(1:30,1)
+      else if ( type[i] == 2 )
+        param[i] = sample(1:30,1)
       else
-        param[i] = 10000
+        param[i] = 20000
   }
   else if ( length(type) == 1 )
     type = rep(type,p)
@@ -35,13 +37,13 @@ SimData <- function(seed,p,n,type,param,overlap,Edensity=0.05)
   W[2*size+1:(size+overlap),3] = rnorm(size+overlap,meanWZ,sigmaWZ) * sample(c(-1,1),size+overlap,TRUE)
   W[3*size+1:size,4] = rnorm(size,meanWZ,sigmaWZ) * sample(c(-1,1),size,TRUE)
 
-  sizeZ = rpois(L,20)
+  sizeZ = rpois(L,30)
   Z = matrix(0,L,n)
   for ( l in 1:L )
     Z[l,sample(1:n,sizeZ[l])] = rnorm(sizeZ[l],meanWZ,sigmaWZ) * sample(c(-1,1),sizeZ[l],TRUE)
   
   m = rep(0,p)
-  m[type==3] = 2.5
+  m[type==3] = 3.5
 
   mu = W%*%Z + m
   X = matrix(0,p,n)
