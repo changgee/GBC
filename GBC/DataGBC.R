@@ -200,8 +200,7 @@ DataGBC_BIC <- function(datapath,outpath,name,L,k,v0,lam,eta,smoothing="Ising",t
           muhat = What %*% Zhat + mhat
           
           nParam = sum(thetaWhat>thres) + sum(thetaZhat>thres)
-          if ( center != 0 )
-            nParam = nParam + p
+          nParam = nParam + p
           
           BIC[d1,d2,d3,d4] = -2*llk(X,muhat,type,param) + nParam*log(n*p)
           
