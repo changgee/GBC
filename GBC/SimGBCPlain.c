@@ -128,8 +128,11 @@ int main()
 			else
 				fputs("overlap = 15\n",f);
 
-			fputs("seed = 100\n",f);
 			fputs("n = 300\n",f);
+			fputs("type = NULL\n",f);
+			fputs("param = NULL\n",f);
+
+			fputs("seed = 100\n",f);
 			fputs("k = 5\n",f);
 			fputs("v0 = 4:8/60\n",f);
 			fputs("lam = 10:14/6\n",f);
