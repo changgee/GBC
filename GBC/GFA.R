@@ -296,6 +296,27 @@ init <- function(X,type,param)
 }
 
 
+# function deviance: calculate the deviance
+llk <- function(X,mu,type,param)
+{
+  p = nrow(X)
+  n = ncol(X)
+  
+  l = 0
+  for ( j in 1:p )
+  {
+    if ( type[j] == 0 )
+      l = l - n*log(mean((X[j,]-mu[j,])^2))/2
+    else if ( type[j] == 1 )
+      l = l + sum(dbinom(X[j,],param[j],1/(1+exp(-mu[j,])),TRUE))
+    else if ( type[j] == 2 )
+      l = l + sum(dnbinom(X[j,],param[j],1/(1+exp(mu[j,])),log=TRUE))
+    else if ( type[j] == 3 )
+      l = l + sum(dpois(X[j,],exp(mu[j,]),TRUE))
+  }
+  l
+}
+
 # function GFA_MCMC: runs MCMC for GFA
 #
 # Parameters:
