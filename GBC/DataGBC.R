@@ -8,11 +8,6 @@ if ( file.exists("/home/changgee/project/GBC/GBC/GFA.R") )
 if ( file.exists("/home/cchan40/project/GBC/GBC/GFA.R") )
   source("/home/cchan40/project/GBC/GBC/GFA.R")
 
-if ( !require(Rtsne) )
-{
-  install.packages("Rtsne")
-  library(Rtsne)
-}
 
 DataGBC_BCV <- function(X,E,L,k,v0,lam,eta,param,intercept=F,smoothing="MRF",thres=0.5,fold=3,seed=100,run=NULL)
 {
@@ -223,36 +218,6 @@ DataGBC_BIC <- function(datapath,outpath,name,L,k,v0,lam,eta,smoothing="Ising",t
 }  
 
 
-if ( FALSE ) # script to find the best tuning parameter by BIC
-{
-source("~/project/GBC/GBC/DataGBC.R")
-datapath = "~/project/GBC/dataset/NCI60/data"
-outpath = "~/project/GBC/GBC/NCI60Plain"
-name = "NCI60"
-L = 3:7
-k = 1:3*5
-v0 = 1:20/50
-lam = 1:15/25
-eta = 0
-DataGBC_BIC(datapath,outpath,name,L,k,v0,lam,eta)
-$opt_BIC
-[1] -263955.6
-
-$opt_L
-[1] 5
-
-$opt_k
-[1] 10
-
-$opt_v0
-[1] 0.02
-
-$opt_lam
-[1] 0.16
-
-}
-
-
 DataGBC_Plain <- function(datapath,outpath,name,L,k,v0,lam,eta,center=1,smoothing="Ising")
 {
   D1 = length(v0)
@@ -282,11 +247,6 @@ DataGBC_Plain <- function(datapath,outpath,name,L,k,v0,lam,eta,center=1,smoothin
 
 }  
 
-
-DataGBC_tSNE(Z)
-{
-  
-}
 
 
 # N: sample size
