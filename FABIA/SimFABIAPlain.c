@@ -55,7 +55,7 @@ int main()
 	m = fopen(fname,"w");
 	chmod(fname,0755);
 
-	for ( s=0 ; s<10 ; s++ )
+	for ( s=0 ; s<6 ; s++ )
 	{
 		sprintf(acronym,"%s%s%02d",method,crit,s+1);
 		sprintf(vname,"res%s",acronym);
@@ -97,34 +97,15 @@ int main()
 			sprintf(line,"source(\"%s/%s\")\n",home,src);
 			fputs(line,f);
 
-			if ( (s/2)%5 == 2 )
+			if ( (s/2)%3 == 0 )
 				fputs("p = 5000\n",f);
 			else
 				fputs("p = 1000\n",f);
 
-			if ( (s/2)%5 != 3 )
-				fputs("L = 4\n",f);
-			else
+			if ( (s/2)%3 == 2 )
 				fputs("L = 5\n",f);
-
-			if ( (s/2)%5 == 0 )
-			{
-				fputs("type = 0\n",f);
-				fputs("param = 4\n",f);
-				fputs("seed = 100\n",f);
-			}
-			else if ( (s/2)%5 < 4 )
-			{
-				fputs("type = 0\n",f);
-				fputs("param = 1\n",f);
-				fputs("seed = 200\n",f);
-			}
 			else
-			{
-				fputs("type = NULL\n",f);
-				fputs("param = NULL\n",f);
-				fputs("seed = 100\n",f);
-			}
+				fputs("L = 4\n",f);
 
 			if ( s%2 == 0 )
 				fputs("overlap = 0\n",f);
@@ -132,17 +113,17 @@ int main()
 				fputs("overlap = 15\n",f);
 
 			fputs("n = 300\n",f);
-			fputs("thrW = 2:6/2\n",f);
-			fputs("thrZ = 1:5/10\n",f);
+			fputs("type = NULL\n",f);
+			fputs("param = NULL\n",f);
 
-			sprintf(line,"if ( !file.exists(\"%s/%s%03d\") )\n",script,vname,batch+1);
+			fputs("seed = 100\n",f);
+			fputs("thrW = 2:6/2\n",f);
+			fputs("thrZ = 2:6/8\n",f);
+
+			sprintf(line,"%s = SimFABIA_%s(%d,seed,p,n,type,param,overlap,L,thrW,thrZ,batch=%d)\n",vname,crit,batch_size,batch);
 			fputs(line,f);
-			fputs("{\n",f);
-			sprintf(line,"  %s = SimFABIA_%s(%d,seed,p,n,type,param,overlap,L,thrW,thrZ,batch=%d)\n",vname,crit,batch_size,batch);
+			sprintf(line,"save(%s,file=\"%s/%s%03d\")\n",vname,script,vname,batch+1);
 			fputs(line,f);
-			sprintf(line,"  save(%s,file=\"%s/%s%03d\")\n",vname,script,vname,batch+1);
-			fputs(line,f);
-			fputs("}\n",f);
 			fclose(f);
 		}
 

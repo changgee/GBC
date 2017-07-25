@@ -93,9 +93,9 @@ int main()
 		fputs(line,f);
 		sprintf(line,"k = %d\n",k);
 		fputs(line,f);
-		sprintf(line,"v0 = 1:20/50\n");
+		sprintf(line,"v0 = 1:7/200\n");
 		fputs(line,f);
-		sprintf(line,"lam = 1:15/25\n");
+		sprintf(line,"lam = 5:11/50\n");
 		fputs(line,f);
 		sprintf(line,"eta = %.02f\n",eta);
 		fputs(line,f);
