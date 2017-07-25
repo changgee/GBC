@@ -113,7 +113,7 @@ int main()
 				fputs("smoothing = \"MRF\"\n",f);
 			}
 
-			if ( (s/2)%3 == 1 )
+			if ( (s/2)%3 == 0 )
 				fputs("p = 5000\n",f);
 			else
 				fputs("p = 1000\n",f);
@@ -134,8 +134,8 @@ int main()
 
 			fputs("seed = 100\n",f);
 			fputs("k = 5\n",f);
-			fputs("v0 = 2:6/30\n",f);
-			fputs("lam = 5:9/4\n",f);
+			fputs("v0 = 1:5/35\n",f);
+			fputs("lam = 3:7/3\n",f);
 
 			sprintf(line,"%s = SimGBC_%s(%d,seed,p,n,type,param,overlap,L,k,v0,lam,eta,smoothing=smoothing,batch=%d)\n",vname,crit,batch_size,batch);
 			fputs(line,f);
