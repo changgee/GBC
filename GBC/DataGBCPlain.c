@@ -54,7 +54,7 @@ int main()
 	chmod(fname,0755);
 
 	for ( L=3 ; L<=7 ; L++ )
-	for ( k=5 ; k<=15 ; k+=5 )
+	for ( k=10 ; k<=20 ; k+=5 )
 	for ( eta=0.00 ; eta<=0.21 ; eta+=0.05 )
 	{
 		sprintf(acronym,"%s%s_%s_L%02d_k%02d_eta%.2f",method,crit,data,L,k,eta);
