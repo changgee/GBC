@@ -134,8 +134,8 @@ int main()
 
 			fputs("seed = 100\n",f);
 			fputs("k = 5\n",f);
-			fputs("v0 = 3:7/55\n",f);
-			fputs("lam = 2:6/2\n",f);
+			fputs("v0 = 2:6/40\n",f);
+			fputs("lam = 2:6/3\n",f);
 
 			sprintf(line,"%s = SimGBC_%s(%d,seed,p,n,type,param,overlap,L,k,v0,lam,eta,smoothing=smoothing,batch=%d)\n",vname,crit,batch_size,batch);
 			fputs(line,f);
