@@ -56,7 +56,7 @@ int main()
 	m = fopen(fname,"w");
 	chmod(fname,0755);
 
-	for ( s=0 ; s<30 ; s++ )
+	for ( s=0 ; s<18 ; s++ )
 	{
 		sprintf(acronym,"%s%s%d%02d",method,crit,K,s+1);
 		sprintf(vname,"res%s",acronym);
@@ -98,12 +98,12 @@ int main()
 			sprintf(line,"source(\"%s/%s\")\n",home,src);
 			fputs(line,f);
 
-			if ( s/10 == 0 )
+			if ( s/6 == 0 )
 			{
 				fputs("eta = 0\n",f);
 				fputs("smoothing = \"Ising\"\n",f);
 			}
-			else if ( s/10 == 1 )
+			else if ( s/6 == 1 )
 			{
 				fputs("eta = 0.1\n",f);
 				fputs("smoothing = \"Ising\"\n",f);
@@ -114,34 +114,15 @@ int main()
 				fputs("smoothing = \"MRF\"\n",f);
 			}
 
-			if ( (s/2)%5 == 2 )
+			if ( (s/2)%3 == 0 )
 				fputs("p = 5000\n",f);
 			else
 				fputs("p = 1000\n",f);
 
-			if ( (s/2)%5 != 3 )
-				fputs("L = 4\n",f);
-			else
+			if ( (s/2)%3 == 2 )
 				fputs("L = 5\n",f);
-
-			if ( (s/2)%5 == 0 )
-			{
-				fputs("type = 0\n",f);
-				fputs("param = 4\n",f);
-				fputs("seed = 100\n",f);
-			}
-			else if ( (s/2)%5 < 4 )
-			{
-				fputs("type = 0\n",f);
-				fputs("param = 1\n",f);
-				fputs("seed = 200\n",f);
-			}
 			else
-			{
-				fputs("type = NULL\n",f);
-				fputs("param = NULL\n",f);
-				fputs("seed = 100\n",f);
-			}
+				fputs("L = 4\n",f);
 
 			if ( s%2 == 0 )
 				fputs("overlap = 0\n",f);
@@ -149,18 +130,18 @@ int main()
 				fputs("overlap = 15\n",f);
 
 			fputs("n = 300\n",f);
-			fputs("k = 5\n",f);
-			fputs("v0 = 4:8/60\n",f);
-			fputs("lam = 10:14/6\n",f);
+			fputs("type = NULL\n",f);
+			fputs("param = NULL\n",f);
 
-			sprintf(line,"if ( !file.exists(\"%s/%s%03d\") )\n",script,vname,batch+1);
+			fputs("seed = 100\n",f);
+			fputs("k = 5\n",f);
+			fputs("v0 = 2:6/40\n",f);
+			fputs("lam = 2:6/3\n",f);
+
+			sprintf(line,"%s = SimGBC_%s(%d,seed,p,n,type,param,overlap,L,k,v0,lam,eta,smoothing=smoothing,batch=%d)\n",vname,crit,batch_size,batch);
 			fputs(line,f);
-			fputs("{\n",f);
-			sprintf(line,"  %s = SimGBC_%s(%d,seed,p,n,type,param,overlap,L,k,v0,lam,eta,smoothing=smoothing,batch=%d)\n",vname,crit,batch_size,batch);
+			sprintf(line,"save(%s,file=\"%s/%s%03d\")\n",vname,script,vname,batch+1);
 			fputs(line,f);
-			sprintf(line,"  save(%s,file=\"%s/%s%03d\")\n",vname,script,vname,batch+1);
-			fputs(line,f);
-			fputs("}\n",f);
 			fclose(f);
 		}
 
