@@ -41,7 +41,8 @@ SimFABIA_BCV <- function(R,seed,p,n,type,param,overlap,L,thrW,thrZ,fold=3,batch=
   SEN = rep(0,R)
   SPE = rep(0,R)
   MCC = rep(0,R)
-
+  CS = rep(0,R)
+  
   S = list()
   
   for ( r in 1:R )
@@ -118,9 +119,10 @@ SimFABIA_BCV <- function(R,seed,p,n,type,param,overlap,L,thrW,thrZ,fold=3,batch=
     SEN[r] = eval$SEN_CE
     SPE[r] = eval$SPE_CE
     MCC[r] = eval$MCC_CE
+    CS[r] = evel$CS
   }
   
-  list(p=p,n=n,type=type,param=param,overlap=overlap,L=L,thrW=thrW,thrZ=thrZ,S=S,Shat=bclus,CE=CE,FP=FP,FN=FN,SEN=SEN,SPE=SPE,MCC=MCC,BCV=BCV,opt_thrW=opt_thrW,opt_thrZ=opt_thrZ)
+  list(p=p,n=n,type=type,param=param,overlap=overlap,L=L,thrW=thrW,thrZ=thrZ,S=S,Shat=bclus,CE=CE,FP=FP,FN=FN,SEN=SEN,SPE=SPE,MCC=MCC,CS=CS,BCV=BCV,opt_thrW=opt_thrW,opt_thrZ=opt_thrZ)
 }
 
 
@@ -279,7 +281,8 @@ SimFABIA_BIC <- function(R,seed,p,n,type,param,overlap,L,thrW,thrZ,batch=0)
   SEN = rep(0,R)
   SPE = rep(0,R)
   MCC = rep(0,R)
-
+  CS = rep(0,R)
+  
   S = list()
   
   for ( r in 1:R )
@@ -344,9 +347,10 @@ SimFABIA_BIC <- function(R,seed,p,n,type,param,overlap,L,thrW,thrZ,batch=0)
     SEN[r] = eval$SEN_CE
     SPE[r] = eval$SPE_CE
     MCC[r] = eval$MCC_CE
+    CS[r] = eval$CS
   }
   
-  list(p=p,n=n,type=type,param=param,overlap=overlap,L=L,thrW=thrW,thrZ=thrZ,S=S,Shat=bclus,CE=CE,FP=FP,FN=FN,SEN=SEN,SPE=SPE,MCC=MCC,BIC=BIC,opt_thrW=opt_thrW,opt_thrZ=opt_thrZ)
+  list(p=p,n=n,type=type,param=param,overlap=overlap,L=L,thrW=thrW,thrZ=thrZ,S=S,Shat=bclus,CE=CE,FP=FP,FN=FN,SEN=SEN,SPE=SPE,MCC=MCC,CS=CS,BIC=BIC,opt_thrW=opt_thrW,opt_thrZ=opt_thrZ)
 }
 
 
@@ -362,7 +366,8 @@ SimFABIA_Plain <- function(R,seed,p,n,type,param,overlap,L,thrW,thrZ,batch=0)
   SEN = array(0,c(D1,D2,R))
   SPE = array(0,c(D1,D2,R))
   MCC = array(0,c(D1,D2,R))
-
+  CS = array(0,c(D1,D2,R))
+  
   S = list()
   fits = list()
   
@@ -394,12 +399,13 @@ SimFABIA_Plain <- function(R,seed,p,n,type,param,overlap,L,thrW,thrZ,batch=0)
         SEN[d1,d2,r] = eval$SEN_CE
         SPE[d1,d2,r] = eval$SPE_CE
         MCC[d1,d2,r] = eval$MCC_CE
+        CS[d1,d2,r] = eval$CS
       }
     
     fits[[r]] = fit
   }
   
-  list(p=p,n=n,type=type,param=param,overlap=overlap,L=L,thrW=thrW,thrZ=thrZ,S=S,CE=CE,FP=FP,FN=FN,SEN=SEN,SPE=SPE,MCC=MCC)
+  list(p=p,n=n,type=type,param=param,overlap=overlap,L=L,thrW=thrW,thrZ=thrZ,S=S,CE=CE,FP=FP,FN=FN,SEN=SEN,SPE=SPE,MCC=MCC,CS=CS)
 }
 
 
