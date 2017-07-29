@@ -185,6 +185,8 @@ int main()
 		fputs(line,g);
 		sprintf(line,"    tmp$MCC = c(tmp$MCC,%s$MCC)\n",vname);
 		fputs(line,g);
+		sprintf(line,"    tmp$CS = c(tmp$CS,%s$CS)\n",vname);
+		fputs(line,g);
 		sprintf(line,"    tmp$BCV = abind(tmp$BCV,%s$BCV)\n",vname);
 		fputs(line,g);
 		sprintf(line,"    tmp$opt_thrW = c(tmp$opt_thrW,%s$opt_thrW)\n",vname);

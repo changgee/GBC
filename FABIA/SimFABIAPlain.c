@@ -184,6 +184,8 @@ int main()
 		fputs(line,g);
 		sprintf(line,"    tmp$MCC = abind(tmp$MCC,%s$MCC)\n",vname);
 		fputs(line,g);
+		sprintf(line,"    tmp$CS = abind(tmp$CS,%s$CS)\n",vname);
+		fputs(line,g);
 		fputs("  }\n",g);
 		fputs("}\n",g);
 		sprintf(line,"%s = tmp\n",vname);
