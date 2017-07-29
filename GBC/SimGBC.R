@@ -42,6 +42,7 @@ SimGBC_BCV <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,center=1,smo
   SEN = rep(0,R)
   SPE = rep(0,R)
   MCC = rep(0,R)
+  CS = rep(0,R)
 
   S = list()
   
@@ -137,9 +138,10 @@ SimGBC_BCV <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,center=1,smo
     SEN[r] = eval$SEN_CE
     SPE[r] = eval$SPE_CE
     MCC[r] = eval$MCC_CE
+    CS[r] = eval$CS
   }
   
-  list(p=p,n=n,type=type,param=param,overlap=overlap,L=L,k=k,v0=v0,lam=lam,eta=eta,S=S,Shat=bclus,BCV=BCV,CE=CE,FP=FP,FN=FN,SEN=SEN,SPE=SPE,MCC=MCC,opt_v0=opt_v0,opt_lam=opt_lam)
+  list(p=p,n=n,type=type,param=param,overlap=overlap,L=L,k=k,v0=v0,lam=lam,eta=eta,S=S,Shat=bclus,BCV=BCV,CE=CE,FP=FP,FN=FN,SEN=SEN,SPE=SPE,MCC=MCC,CS=CS,opt_v0=opt_v0,opt_lam=opt_lam)
 }
 
 
@@ -259,7 +261,8 @@ SimGBC_BIC <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,center=1,smo
   SEN = rep(0,R)
   SPE = rep(0,R)
   MCC = rep(0,R)
-
+  CS = rep(0,R)
+  
   S = list()
 
   for ( r in 1:R )
@@ -308,9 +311,10 @@ SimGBC_BIC <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,center=1,smo
     SEN[r] = eval$SEN_CE
     SPE[r] = eval$SPE_CE
     MCC[r] = eval$MCC_CE
+    CS[r] = eval$CS
   }
   
-  list(p=p,n=n,type=type,param=param,overlap=overlap,L=L,k=k,v0=v0,lam=lam,eta=eta,S=S,Shat=bclus,CE=CE,FP=FP,FN=FN,SEN=SEN,SPE=SPE,MCC=MCC,BIC=BIC,opt_v0=opt_v0,opt_lam=opt_lam)
+  list(p=p,n=n,type=type,param=param,overlap=overlap,L=L,k=k,v0=v0,lam=lam,eta=eta,S=S,Shat=bclus,CE=CE,FP=FP,FN=FN,SEN=SEN,SPE=SPE,MCC=MCC,CS=CS,BIC=BIC,opt_v0=opt_v0,opt_lam=opt_lam)
   
 }
 
@@ -326,6 +330,7 @@ SimGBC_Plain <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,center=1,s
   SEN = array(0,c(D1,D2,R))
   SPE = array(0,c(D1,D2,R))
   MCC = array(0,c(D1,D2,R))
+  CS = array(0,c(D1,D2,R))
   
   S = list()
   fits = list()
@@ -360,11 +365,12 @@ SimGBC_Plain <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,center=1,s
         SEN[d1,d2,r] = eval$SEN_CE
         SPE[d1,d2,r] = eval$SPE_CE
         MCC[d1,d2,r] = eval$MCC_CE
+        CS[d1,d2,r] = eval$CS
       }
     }
   }
   
-  list(p=p,n=n,type=type,param=param,overlap=overlap,L=L,k=k,v0=v0,lam=lam,eta=eta,S=S,CE=CE,FP=FP,FN=FN,SEN=SEN,SPE=SPE,MCC=MCC)
+  list(p=p,n=n,type=type,param=param,overlap=overlap,L=L,k=k,v0=v0,lam=lam,eta=eta,S=S,CE=CE,FP=FP,FN=FN,SEN=SEN,SPE=SPE,MCC=MCC,CS=CS)
 }
 
 
