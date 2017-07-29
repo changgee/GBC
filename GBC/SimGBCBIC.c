@@ -23,7 +23,7 @@ int main()
 	int s, batch_size, batch, R, where;
 
 	R = 100;
-	batch_size = 10;
+	batch_size = 5;
 
 	strcpy(method,"GBC");
 	strcpy(crit,"BIC");
