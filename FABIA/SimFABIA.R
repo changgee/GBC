@@ -119,7 +119,7 @@ SimFABIA_BCV <- function(R,seed,p,n,type,param,overlap,L,thrW,thrZ,fold=3,batch=
     SEN[r] = eval$SEN_CE
     SPE[r] = eval$SPE_CE
     MCC[r] = eval$MCC_CE
-    CS[r] = evel$CS
+    CS[r] = eval$CS
   }
   
   list(p=p,n=n,type=type,param=param,overlap=overlap,L=L,thrW=thrW,thrZ=thrZ,S=S,Shat=bclus,CE=CE,FP=FP,FN=FN,SEN=SEN,SPE=SPE,MCC=MCC,CS=CS,BCV=BCV,opt_thrW=opt_thrW,opt_thrZ=opt_thrZ)

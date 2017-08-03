@@ -53,7 +53,7 @@ int main()
 	h = fopen(fname,"w");
 	chmod(fname,0755);
 
-	for ( L=3 ; L<=7 ; L++ )
+	for ( L=4 ; L<=10 ; L++ )
 	for ( k=10 ; k<=20 ; k+=5 )
 	for ( eta=0.00 ; eta<=0.21 ; eta+=0.05 )
 	{
