@@ -245,13 +245,14 @@ GFA_EM <- function(X,type,E,L,v0,v1,lam,eta,param,center=0,m=NULL,smoothing="MRF
 
     
     # W and Z adjustments
-    for ( l in 1:L )
-    {
-      ww = sum(W[,l]^2)
-      zz = sum(Z[l,]^2)
-      W[,l] = sqrt(sqrt(p*zz/ww/n)) * W[,l]
-      Z[l,] = sqrt(sqrt(n*ww/zz/p)) * Z[l,]
-    }
+    if ( iter <= 100 )
+      for ( l in 1:L )
+      {
+        ww = sum(W[,l]^2)
+        zz = sum(Z[l,]^2)
+        W[,l] = sqrt(sqrt(p*zz/ww/n)) * W[,l]
+        Z[l,] = sqrt(sqrt(n*ww/zz/p)) * Z[l,]
+      }
     
 
     if ( max(abs(ptheta-thetaW)) < 5e-2 )
