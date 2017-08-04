@@ -55,7 +55,7 @@ int main()
 	m = fopen(fname,"w");
 	chmod(fname,0755);
 
-	for ( s=0 ; s<18 ; s++ )
+	for ( s=0 ; s<48 ; s++ )
 	{
 		sprintf(acronym,"%s%s%02d",method,crit,s+1);
 		sprintf(vname,"res%s",acronym);
@@ -97,12 +97,12 @@ int main()
 			sprintf(line,"source(\"%s/%s\")\n",home,src);
 			fputs(line,f);
 
-			if ( s/6 == 0 )
+			if ( s/16 == 0 )
 			{
 				fputs("eta = 0\n",f);
 				fputs("smoothing = \"Ising\"\n",f);
 			}
-			else if ( s/6 == 1 )
+			else if ( s/16 == 1 )
 			{
 				fputs("eta = 0.1\n",f);
 				fputs("smoothing = \"Ising\"\n",f);
@@ -113,29 +113,38 @@ int main()
 				fputs("smoothing = \"MRF\"\n",f);
 			}
 
-			if ( (s/2)%3 == 0 )
-				fputs("p = 5000\n",f);
+			if ( (s/8)%2 == 0 )
+			{
+				fputs("type = 0\n",f);
+				fputs("param = 4\n",f);
+			}
 			else
-				fputs("p = 1000\n",f);
+			{
+				fputs("type = NULL\n",f);
+				fputs("param = NULL\n",f);
+			}
 
-			if ( (s/2)%3 == 2 )
-				fputs("L = 5\n",f);
-			else
+			if ( (s/2)%4 == 0 )
 				fputs("L = 4\n",f);
+			else if ( (s/2)%4 == 1 )
+				fputs("L = 5\n",f);
+			else if ( (s/2)%4 == 2 )
+				fputs("L = 10\n",f);
+			else
+				fputs("L = 20\n",f);
 
 			if ( s%2 == 0 )
 				fputs("overlap = 0\n",f);
 			else
 				fputs("overlap = 15\n",f);
 
+			fputs("p = 1000\n",f);
 			fputs("n = 300\n",f);
-			fputs("type = NULL\n",f);
-			fputs("param = NULL\n",f);
 
 			fputs("seed = 100\n",f);
 			fputs("k = 5\n",f);
-			fputs("v0 = 2:6/40\n",f);
-			fputs("lam = 2:6/3\n",f);
+			fputs("v0 = 3:7/40\n",f);
+			fputs("lam = 8:12/6\n",f);
 
 			sprintf(line,"%s = SimGBC_%s(%d,seed,p,n,type,param,overlap,L,k,v0,lam,eta,smoothing=smoothing,batch=%d)\n",vname,crit,batch_size,batch);
 			fputs(line,f);

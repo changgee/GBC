@@ -16,11 +16,11 @@ SimData <- function(seed,p,n,type,param,overlap,Edensity=0.05)
     param = rep(0,p)
     for ( i in 1:p )
       if ( type[i] == 0 )
-        param[i] = 9
+        param[i] = 4
       else if ( type[i] == 1 )
-        param[i] = sample(1:30,1)
+        param[i] = sample(1:20,1)
       else if ( type[i] == 2 )
-        param[i] = sample(1:30,1)
+        param[i] = sample(1:20,1)
       else
         param[i] = 20000
   }
