@@ -126,16 +126,8 @@ int main()
 			fputs("n = 300\n",f);
 
 			fputs("seed = 100\n",f);
-			if ( (s/8)%2 == 0 )
-			{
-				fputs("thrW = 2:6/3\n",f);
-				fputs("thrZ = 1:5/15\n",f);
-			}
-			else
-			{
-				fputs("thrW = 2:6/2\n",f);
-				fputs("thrZ = 2:6/8\n",f);
-			}
+			fputs("thrW = 2:6/2\n",f);
+			fputs("thrZ = 1:5/10\n",f);
 
 			sprintf(line,"%s = SimFABIA_%s(%d,seed,p,n,type,param,overlap,L,thrW,thrZ,batch=%d)\n",vname,crit,batch_size,batch);
 			fputs(line,f);
