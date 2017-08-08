@@ -191,7 +191,7 @@ DataGBC_BIC <- function(datapath,outpath,name,L,k,v0,lam,eta,smoothing="Ising",t
       for ( d3 in 1:D3 )
         for ( d4 in 1:D4 )
         {
-          fname = sprintf("res_%s_GBC_%02d_%02d_%.3f_%.2f_%.2f",name,L[d1],k[d2],v0[d3],lam[d4],eta)
+          fname = sprintf("res_%s_GBC_%02d_%02d_%.3f_%.3f_%.2f",name,L[d1],k[d2],v0[d3],lam[d4],eta)
           fpath = paste(outpath,fname,sep="/")
           load(fpath)
           
