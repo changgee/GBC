@@ -77,3 +77,29 @@ DataFABIA_BCV <- function(X,L,thW,thZ,fold=3,run=NULL)
   list(L=L,k=k,v0=v0,lam=lam,eta=eta,fold=fold,BCV=BCV,opt_v0=opt_v0,opt_lam=opt_lam,opt_fit=fit,opt_biclus=Shat,time=as.numeric(time[1]))
 }  
 
+DataFABIA_Plain <- function(datapath,outpath,name,L,thrW,thrZ)
+{
+  D1 = length(thrW)
+  D2 = length(thrZ)
+  
+  load(datapath)
+  time = system.time(fit <- fabia(X,L,random=0,center=2))
+  
+  What = fit@L
+  Zhat = fit@Z
+  mhat = fit@center
+
+  for ( d1 in 1:D1 )
+    for ( d2 in 1:D2 )
+    {
+      fname = sprintf("res_%s_FABIA_%02d_%.2f_%.2f",name,L,thrW[d1],thrZ[d2])
+      fpath = paste(outpath,fname,sep="/")
+      if ( !file.exists(fpath) )
+      {
+        bichat = extractBic(fit,thrW[d1],thrZ[d2])
+
+        save(What,Zhat,mhat,bichat,time,file=fpath)
+      }
+    }    
+  
+}  
