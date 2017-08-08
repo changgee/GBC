@@ -19,6 +19,7 @@ int main()
 	char script[100];
 	char datapath[100];
 	char data[20];
+	char ver[20];
 	char src[50];
 	char vname[50];
 	FILE *f, *h;
@@ -26,6 +27,7 @@ int main()
 	double eta;
 
 	strcpy(data,"NCI60");
+	strcpy(ver,"1000");
 	strcpy(method,"GBC");
 	strcpy(crit,"Plain");
 
@@ -45,19 +47,19 @@ int main()
 		strcpy(master,"/home/changgee/project/GBC");
 	}
 	sprintf(home,"%s/GBC",master);
-	sprintf(datapath,"%s/dataset/%s/data",master,data);
+	sprintf(datapath,"%s/dataset/%s/data%s",master,data,ver);
 	sprintf(script,"%s/%s%s",home,data,crit);
 	strcpy(src,"DataGBC.R");
 
-	sprintf(fname,"%s%s%s",method,crit,data);
+	sprintf(fname,"%s%s%s%s",method,crit,data,ver);
 	h = fopen(fname,"w");
 	chmod(fname,0755);
 
-	for ( L=4 ; L<=10 ; L++ )
+	for ( L=10 ; L<=10 ; L++ )
 	for ( k=10 ; k<=20 ; k+=5 )
 	for ( eta=0.00 ; eta<=0.21 ; eta+=0.05 )
 	{
-		sprintf(acronym,"%s%s_%s_L%02d_k%02d_eta%.2f",method,crit,data,L,k,eta);
+		sprintf(acronym,"%s%s_%s%s_L%02d_k%02d_eta%.2f",method,crit,data,ver,L,k,eta);
 		sprintf(vname,"res%s",acronym);
 		sprintf(fname,"%s/%s",script,acronym);
 		if ( where == Emory )
@@ -93,9 +95,9 @@ int main()
 		fputs(line,f);
 		sprintf(line,"k = %d\n",k);
 		fputs(line,f);
-		sprintf(line,"v0 = 1:7/200\n");
+		sprintf(line,"v0 = 1:9/1000\n");
 		fputs(line,f);
-		sprintf(line,"lam = 5:11/50\n");
+		sprintf(line,"lam = 1:10/1000\n");
 		fputs(line,f);
 		sprintf(line,"eta = %.02f\n",eta);
 		fputs(line,f);
@@ -104,7 +106,7 @@ int main()
 		fputs(line,f);
 		sprintf(line,"opath = '%s'\n",script);
 		fputs(line,f);
-		sprintf(line,"name = '%s'\n",data);
+		sprintf(line,"name = '%s%s'\n",data,ver);
 		fputs(line,f);
 
 		sprintf(line,"DataGBC_%s(dpath,opath,name,L,k,v0,lam,eta)\n",crit);

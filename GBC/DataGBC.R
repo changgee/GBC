@@ -228,7 +228,7 @@ DataGBC_Plain <- function(datapath,outpath,name,L,k,v0,lam,eta,center=1,smoothin
   for ( d1 in 1:D1 )
     for ( d2 in 1:D2 )
     {
-      fname = sprintf("res_%s_GBC_%02d_%02d_%.3f_%.2f_%.2f",name,L,k,v0[d1],lam[d2],eta)
+      fname = sprintf("res_%s_GBC_%02d_%02d_%.3f_%.3f_%.2f",name,L,k,v0[d1],lam[d2],eta)
       fpath = paste(outpath,fname,sep="/")
       if ( !file.exists(fpath) )
       {
