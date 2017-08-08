@@ -4,9 +4,8 @@ if ( !require(clue) )
   library(clue)
 }
 
-gbcmetric = function(S1,S2,p,n)
+gbcmetric = function(S1,S2,p,n,clus_dir=2)
 {
-
   # remove empty biclusters
   k1 = length(S1)
   k2 = length(S2)
@@ -22,6 +21,28 @@ gbcmetric = function(S1,S2,p,n)
 
   k1 = length(S1)
   k2 = length(S2)
+  
+  if ( clus_dir == 0 )
+  {
+    n = 1
+    if ( k1 > 0 )
+      for ( i in 1:k1 )
+        S1[[i]]$c = 1
+    if ( k2 > 0 )
+      for ( j in 1:k2 )
+        S2[[j]]$c = 1
+  }
+  else if ( clus_dir == 1 )
+  {
+    p = 1
+    if ( k1 > 0 )
+      for ( i in 1:k1 )
+        S1[[i]]$r = 1
+    if ( k2 > 0 )
+      for ( j in 1:k2 )
+        S2[[j]]$r = 1
+  }
+  
   X1 = matrix(0,p,n)
   X2 = matrix(0,p,n)
   k = max(k1,k2)
