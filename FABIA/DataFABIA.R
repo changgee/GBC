@@ -78,7 +78,7 @@ DataFABIA_BCV <- function(X,L,thW,thZ,fold=3,run=NULL)
 }  
 
 
-DataGBC_BIC <- function(datapath,outpath,name,L,thrW,thrZ,thres=0.5)
+DataFABIA_BIC <- function(datapath,outpath,name,L,thrW,thrZ,thres=0.5)
 {
   D1 = length(L)
   D2 = length(thrW)
