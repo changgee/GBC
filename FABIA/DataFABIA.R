@@ -77,6 +77,58 @@ DataFABIA_BCV <- function(X,L,thW,thZ,fold=3,run=NULL)
   list(L=L,k=k,v0=v0,lam=lam,eta=eta,fold=fold,BCV=BCV,opt_v0=opt_v0,opt_lam=opt_lam,opt_fit=fit,opt_biclus=Shat,time=as.numeric(time[1]))
 }  
 
+
+DataGBC_BIC <- function(datapath,outpath,name,L,thrW,thrZ,thres=0.5)
+{
+  D1 = length(L)
+  D2 = length(thrW)
+  D3 = length(thrZ)
+
+  BIC = array(0,c(D1,D2,D3))
+  opt_BIC = Inf
+  
+  load(datapath)
+  
+  for ( d1 in 1:D1 )
+    for ( d2 in 1:D2 )
+      for ( d3 in 1:D3 )
+      {
+        fname = sprintf("res_%s_FABIA_%02d_%.2f_%.2ff",name,L[d1],thrW[d2],thrZ[d3])
+        fpath = paste(outpath,fname,sep="/")
+        load(fpath)
+        
+        W = matrix(0,p,L[d1])
+        Z = matrix(0,L[d1],n)
+        
+        nParam = p
+        for ( l in 1:L[d1] )
+        {
+          Widx = bichat$numn[l,1]$numng
+          Zidx = bichat$numn[l,2]$numnp
+          if ( length(Widx) != 0 & length(Zidx) != 0 )
+          {
+            nParam = nParam + length(Widx) + length(Zidx)
+            W[Widx,l] = What[Widx,l]
+            Z[l,Zidx] = Zhat[l,Zidx]
+          }
+        }
+        
+        muhat = W %*% Z + mhat
+        
+        BIC[d1,d2,d3] = n*p*log(mean((X-muhat)^2)) + nParam*log(n*p)
+  
+        if ( opt_BIC > BIC[d1,d2,d3] )
+        {
+          opt_BIC = BIC[d1,d2,d3]
+          opt_L = L[d1]
+          opt_thrW = thrW[d2]
+          opt_thrZ = thrZ[d3]
+        }
+      }
+  
+  list(name=name,L=L,k=k,v0=v0,lam=lam,eta=eta,BIC=BIC,opt_BIC=opt_BIC,opt_L=opt_L,opt_thrW=opt_thrW,opt_thrZ=opt_thrZ)
+}  
+
 DataFABIA_Plain <- function(datapath,outpath,name,L,thrW,thrZ)
 {
   D1 = length(thrW)

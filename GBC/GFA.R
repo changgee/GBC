@@ -104,12 +104,16 @@ GFA_EM <- function(X,type,E,L,v0,v1,lam,eta,param,center=0,m=NULL,smoothing="MRF
   else
   {
     init_svd = svd(Y-m,L,L)
-#    W = init_svd$u %*% diag(sqrt(init_svd$d[1:L]),L)    
-#    Z = diag(sqrt(init_svd$d[1:L]),L) %*% t(init_svd$v)
-    vm = varimax(init_svd$u %*% diag(init_svd$d[1:L],L))
-    sc = sqrt(apply(vm$loadings^2,2,sum))
-    Z = t(init_svd$v%*%vm$rotmat) * sqrt(sc)
-    W = matrix(vm$loadings,p) / rep(sqrt(sc),each=p)
+    W = init_svd$u %*% diag(sqrt(init_svd$d[1:L]),L)    
+    Z = diag(sqrt(init_svd$d[1:L]),L) %*% t(init_svd$v)
+
+    vm = varimax(W)
+    W = matrix(vm$loadings,p)
+    Z = t(vm$rotmat) %*% Z
+
+#    vm = varimax(t(Z))
+#    W = W %*% t(vm$rotmat)
+#    Z = t(matrix(vm$loadings,n))
   }
 
   rho = matrix(0,p,n)
