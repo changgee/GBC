@@ -126,7 +126,7 @@ DataFABIA_BIC <- function(datapath,outpath,name,L,thrW,thrZ,thres=0.5)
         }
       }
   
-  list(name=name,L=L,k=k,v0=v0,lam=lam,eta=eta,BIC=BIC,opt_BIC=opt_BIC,opt_L=opt_L,opt_thrW=opt_thrW,opt_thrZ=opt_thrZ)
+  list(name=name,L=L,thrW=thrW,thrZ=thrZ,BIC=BIC,opt_BIC=opt_BIC,opt_L=opt_L,opt_thrW=opt_thrW,opt_thrZ=opt_thrZ)
 }  
 
 DataFABIA_Plain <- function(datapath,outpath,name,L,thrW,thrZ)
