@@ -93,7 +93,7 @@ DataFABIA_BIC <- function(datapath,outpath,name,L,thrW,thrZ,thres=0.5)
     for ( d2 in 1:D2 )
       for ( d3 in 1:D3 )
       {
-        fname = sprintf("res_%s_FABIA_%02d_%.2f_%.2ff",name,L[d1],thrW[d2],thrZ[d3])
+        fname = sprintf("res_%s_FABIA_%02d_%.2f_%.2f",name,L[d1],thrW[d2],thrZ[d3])
         fpath = paste(outpath,fname,sep="/")
         load(fpath)
         
