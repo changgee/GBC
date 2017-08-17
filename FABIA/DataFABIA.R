@@ -129,6 +129,48 @@ DataFABIA_BIC <- function(datapath,outpath,name,L,thrW,thrZ,thres=0.5)
   list(name=name,L=L,thrW=thrW,thrZ=thrZ,BIC=BIC,opt_BIC=opt_BIC,opt_L=opt_L,opt_thrW=opt_thrW,opt_thrZ=opt_thrZ)
 }  
 
+
+DataFABIA_CE <- function(datapath,outpath,name,L,thrW,thrZ,thres=0.5)
+{
+  D1 = length(L)
+  D2 = length(thrW)
+  D3 = length(thrZ)
+  
+  CE = array(0,c(D1,D2,D3))
+  opt_CE = -Inf
+  
+  load(datapath)
+  S = list()
+  for ( i in 1:9 )
+    S[[i]] = list(r=1,c=which(org==i))
+  
+  for ( d1 in 1:D1 )
+    for ( d2 in 1:D2 )
+      for ( d3 in 1:D3 )
+      {
+        fname = sprintf("res_%s_FABIA_%02d_%.2f_%.2f",name,L[d1],thrW[d2],thrZ[d3])
+        fpath = paste(outpath,fname,sep="/")
+        load(fpath)
+        
+        
+        Shat = list()
+        for ( l in 1:L )
+          Shat[[l]] =  list(r=bichat$numn[l,1]$numng,c=bichat$numn[l,2]$numnp )
+
+        CE[d1,d2,d3] = gbcmetric(Shat,S,p,n,1)$CE
+        
+        if ( opt_CE < CE[d1,d2,d3] )
+        {
+          opt_CE = CE[d1,d2,d3]
+          opt_L = L[d1]
+          opt_thrW = thrW[d2]
+          opt_thrZ = thrZ[d3]
+        }
+      }
+  
+  list(name=name,L=L,thrW=thrW,thrZ=thrZ,CE=CE,opt_CE=opt_CE,opt_L=opt_L,opt_thrW=opt_thrW,opt_thrZ=opt_thrZ)
+}  
+
 DataFABIA_Plain <- function(datapath,outpath,name,L,thrW,thrZ)
 {
   D1 = length(thrW)
