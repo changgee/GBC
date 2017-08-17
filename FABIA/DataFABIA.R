@@ -154,7 +154,7 @@ DataFABIA_CE <- function(datapath,outpath,name,L,thrW,thrZ,thres=0.5)
         
         
         Shat = list()
-        for ( l in 1:L )
+        for ( l in 1:L[d1] )
           Shat[[l]] =  list(r=bichat$numn[l,1]$numng,c=bichat$numn[l,2]$numnp )
 
         CE[d1,d2,d3] = gbcmetric(Shat,S,p,n,1)$CE
