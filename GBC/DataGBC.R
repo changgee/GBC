@@ -8,6 +8,13 @@ if ( file.exists("/home/changgee/project/GBC/GBC/GFA.R") )
 if ( file.exists("/home/cchan40/project/GBC/GBC/GFA.R") )
   source("/home/cchan40/project/GBC/GBC/GFA.R")
 
+if ( file.exists("Eval/gbcmetric.R") )
+  source("Eval/gbcmetric.R")
+if ( file.exists("/home/changgee/project/GBC/Eval/gbcmetric.R") )
+  source("/home/changgee/project/GBC/Eval/gbcmetric.R")
+if ( file.exists("/home/cchan40/project/GBC/Eval/gbcmetric.R") )
+  source("/home/cchan40/project/GBC/Eval/gbcmetric.R")
+
 
 DataGBC_BCV <- function(X,E,L,k,v0,lam,eta,param,intercept=F,smoothing="MRF",thres=0.5,fold=3,seed=100,run=NULL)
 {
@@ -217,6 +224,49 @@ DataGBC_BIC <- function(datapath,outpath,name,L,k,v0,lam,eta,smoothing="Ising",t
   list(name=name,L=L,k=k,v0=v0,lam=lam,eta=eta,BIC=BIC,opt_BIC=opt_BIC,opt_L=opt_L,opt_k=opt_k,opt_v0=opt_v0,opt_lam=opt_lam)
 }  
 
+
+DataGBC_CE <- function(datapath,outpath,name,L,k,v0,lam,eta,smoothing="Ising",thres=0.5)
+{
+  D1 = length(L)
+  D2 = length(k)
+  D3 = length(v0)
+  D4 = length(lam)
+  
+  CE = array(0,c(D1,D2,D3,D4))
+  opt_CE = Inf
+  
+  load(datapath)
+  S = list()
+  for ( i in 1:9 )
+    S[[i]] = list(r=1,c=which(org==i))
+
+  for ( d1 in 1:D1 )
+    for ( d2 in 1:D2 )
+      for ( d3 in 1:D3 )
+        for ( d4 in 1:D4 )
+        {
+          fname = sprintf("res_%s_GBC_%02d_%02d_%.3f_%.3f_%.2f",name,L[d1],k[d2],v0[d3],lam[d4],eta)
+          fpath = paste(outpath,fname,sep="/")
+          load(fpath)
+          
+          Shat = list()
+          for ( l in 1:L )
+            Shat[[l]] = list(r=which(thetaWhat[,l]>thres),c=which(thetaZhat[l,]>thres))
+
+          CE[d1,d2,d3,d4] = gbcmetric(Shat,S,p,n,1)$CE
+          
+          if ( opt_CE > CE[d1,d2,d3,d4] )
+          {
+            opt_CE = CE[d1,d2,d3,d4]
+            opt_L = L[d1]
+            opt_k = k[d2]
+            opt_v0 = v0[d3]
+            opt_lam = lam[d4]
+          }
+        }
+  
+  list(name=name,L=L,k=k,v0=v0,lam=lam,eta=eta,CE=CE,opt_CE=opt_CE,opt_L=opt_L,opt_k=opt_k,opt_v0=opt_v0,opt_lam=opt_lam)
+}  
 
 DataGBC_Plain <- function(datapath,outpath,name,L,k,v0,lam,eta,center=1,smoothing="Ising")
 {
