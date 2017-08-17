@@ -255,7 +255,7 @@ DataGBC_CE <- function(datapath,outpath,name,L,k,v0,lam,eta,smoothing="Ising",th
 
           CE[d1,d2,d3,d4] = gbcmetric(Shat,S,p,n,1)$CE
           
-          if ( opt_CE > CE[d1,d2,d3,d4] )
+          if ( opt_CE < CE[d1,d2,d3,d4] )
           {
             opt_CE = CE[d1,d2,d3,d4]
             opt_L = L[d1]
