@@ -233,7 +233,7 @@ DataGBC_CE <- function(datapath,outpath,name,L,k,v0,lam,eta,smoothing="Ising",th
   D4 = length(lam)
   
   CE = array(0,c(D1,D2,D3,D4))
-  opt_CE = Inf
+  opt_CE = -Inf
   
   load(datapath)
   S = list()
