@@ -250,7 +250,7 @@ DataGBC_CE <- function(datapath,outpath,name,L,k,v0,lam,eta,smoothing="Ising",th
           load(fpath)
           
           Shat = list()
-          for ( l in 1:L )
+          for ( l in 1:L[d1] )
             Shat[[l]] = list(r=which(thetaWhat[,l]>thres),c=which(thetaZhat[l,]>thres))
 
           CE[d1,d2,d3,d4] = gbcmetric(Shat,S,p,n,1)$CE
