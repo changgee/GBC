@@ -198,7 +198,7 @@ DataGBC_BIC <- function(datapath,outpath,name,L,k,v0,lam,eta,smoothing="Ising",t
       for ( d3 in 1:D3 )
         for ( d4 in 1:D4 )
         {
-          fname = sprintf("res_%s_GBC_%02d_%02d_%.3f_%.3f_%.2f",name,L[d1],k[d2],v0[d3],lam[d4],eta)
+          fname = sprintf("res_%s_GBC_%02d_%02d_%.4f_%.4f_%.2f",name,L[d1],k[d2],v0[d3],lam[d4],eta)
           fpath = paste(outpath,fname,sep="/")
           load(fpath)
           
@@ -245,7 +245,7 @@ DataGBC_CE <- function(datapath,outpath,name,L,k,v0,lam,eta,smoothing="Ising",th
       for ( d3 in 1:D3 )
         for ( d4 in 1:D4 )
         {
-          fname = sprintf("res_%s_GBC_%02d_%02d_%.3f_%.3f_%.2f",name,L[d1],k[d2],v0[d3],lam[d4],eta)
+          fname = sprintf("res_%s_GBC_%02d_%02d_%.4f_%.4f_%.2f",name,L[d1],k[d2],v0[d3],lam[d4],eta)
           fpath = paste(outpath,fname,sep="/")
           load(fpath)
           
@@ -278,7 +278,7 @@ DataGBC_Plain <- function(datapath,outpath,name,L,k,v0,lam,eta,center=1,smoothin
   for ( d1 in 1:D1 )
     for ( d2 in 1:D2 )
     {
-      fname = sprintf("res_%s_GBC_%02d_%02d_%.3f_%.3f_%.2f",name,L,k,v0[d1],lam[d2],eta)
+      fname = sprintf("res_%s_GBC_%02d_%02d_%.4f_%.4f_%.2f",name,L,k,v0[d1],lam[d2],eta)
       fpath = paste(outpath,fname,sep="/")
       if ( !file.exists(fpath) )
       {
