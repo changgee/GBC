@@ -346,7 +346,6 @@ SimGBC_Plain <- function(R,seed,p,n,type,param,overlap,L,Lmax,k,v0,lam,eta,cente
     
     for ( d1 in 1:D1 )
     {
-      fits[[r]][[d1]] = list()
       for ( d2 in 1:D2 )
       {
         fit = GFA_EM(data$X,data$type,data$E,L,v0[d1],k*v0[d1],lam[d2],eta,data$param,center,smoothing=smoothing,GBC=T)
