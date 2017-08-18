@@ -55,7 +55,7 @@ int main()
 	m = fopen(fname,"w");
 	chmod(fname,0755);
 
-	for ( s=0 ; s<32 ; s++ )
+	for ( s=0 ; s<8 ; s++ )
 	{
 		sprintf(acronym,"%s%s%02d",method,crit,s+1);
 		sprintf(vname,"res%s",acronym);
@@ -139,11 +139,10 @@ int main()
 
 			fputs("seed = 100\n",f);
 			fputs("k = 10\n",f);
-			fputs("v0 = 1:5/100\n",f);
-			fputs("u0 = 1:5/100\n",f);
-			fputs("lam = 1\n",f);
+			fputs("v0 = 6:10/50\n",f);
+			fputs("lam = 3:7/25\n",f);
 
-			sprintf(line,"%s = SimGBC_%s(%d,seed,p,n,type,param,overlap,L,Lmax,k,v0,u0,lam,eta,batch=%d)\n",vname,crit,batch_size,batch);
+			sprintf(line,"%s = SimGBC_%s(%d,seed,p,n,type,param,overlap,L,Lmax,k,v0,lam,eta,batch=%d)\n",vname,crit,batch_size,batch);
 			fputs(line,f);
 			sprintf(line,"save(%s,file=\"%s/%s%03d\")\n",vname,script,vname,batch+1);
 			fputs(line,f);

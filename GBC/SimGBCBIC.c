@@ -102,15 +102,10 @@ int main()
 				fputs("eta = 0\n",f);
 				fputs("smoothing = \"Ising\"\n",f);
 			}
-			else if ( s/16 == 1 )
-			{
-				fputs("eta = 0.1\n",f);
-				fputs("smoothing = \"Ising\"\n",f);
-			}
 			else
 			{
 				fputs("eta = 0.1\n",f);
-				fputs("smoothing = \"MRF\"\n",f);
+				fputs("smoothing = \"Ising\"\n",f);
 			}
 
 			if ( (s/8)%2 == 0 )
@@ -124,14 +119,15 @@ int main()
 				fputs("param = NULL\n",f);
 			}
 
-			if ( (s/2)%4 == 0 )
-				fputs("L = 4\n",f);
-			else if ( (s/2)%4 == 1 )
+			if ( (s/4)%2 == 0 )
 				fputs("L = 5\n",f);
-			else if ( (s/2)%4 == 2 )
-				fputs("L = 10\n",f);
 			else
-				fputs("L = 20\n",f);
+				fputs("L = 10\n",f);
+
+			if ( (s/2)%2 == 0 )
+				fputs("Lmax = L\n",f);
+			else
+				fputs("Lmax = L+3\n",f);
 
 			if ( s%2 == 0 )
 				fputs("overlap = 0\n",f);
@@ -142,11 +138,11 @@ int main()
 			fputs("n = 300\n",f);
 
 			fputs("seed = 100\n",f);
-			fputs("k = 5\n",f);
+			fputs("k = 10\n",f);
 			fputs("v0 = 3:7/40\n",f);
 			fputs("lam = 8:12/6\n",f);
 
-			sprintf(line,"%s = SimGBC_%s(%d,seed,p,n,type,param,overlap,L,k,v0,lam,eta,smoothing=smoothing,batch=%d)\n",vname,crit,batch_size,batch);
+			sprintf(line,"%s = SimGBC_%s(%d,seed,p,n,type,param,overlap,L,Lmax,k,v0,lam,eta,smoothing=smoothing,batch=%d)\n",vname,crit,batch_size,batch);
 			fputs(line,f);
 			sprintf(line,"save(%s,file=\"%s/%s%03d\")\n",vname,script,vname,batch+1);
 			fputs(line,f);
@@ -211,6 +207,8 @@ int main()
 		sprintf(line,"    tmp$MCC = c(tmp$MCC,%s$MCC)\n",vname);
 		fputs(line,g);
 		sprintf(line,"    tmp$CS = c(tmp$CS,%s$CS)\n",vname);
+		fputs(line,g);
+		sprintf(line,"    tmp$Lhat = c(tmp$Lhat,%s$Lhat)\n",vname);
 		fputs(line,g);
 		sprintf(line,"    tmp$BIC = abind(tmp$BIC,%s$BIC)\n",vname);
 		fputs(line,g);
