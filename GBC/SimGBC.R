@@ -319,10 +319,10 @@ SimGBC_BIC <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,center=1,smo
 }
 
 
-SimGBC_Plain <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,center=1,smoothing="Ising",thres=0.5,batch=0)
+SimGBC_Plain <- function(R,seed,p,n,type,param,overlap,L,k,v0,u0,lam,eta,center=1,smoothing="Ising",thres=0.5,batch=0)
 {
   D1 = length(v0)
-  D2 = length(lam)
+  D2 = length(u0)
   
   CE = array(0,c(D1,D2,R))
   FP = array(0,c(D1,D2,R))
@@ -351,7 +351,7 @@ SimGBC_Plain <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,center=1,s
       fits[[r]][[d1]] = list()
       for ( d2 in 1:D2 )
       {
-        fit = GFA_EM(data$X,data$type,data$E,L,v0[d1],k*v0[d1],lam[d2],eta,data$param,center,smoothing=smoothing,GBC=T)
+        fit = GFA_EM(data$X,data$type,data$E,L,v0[d1],k*v0[d1],lam,eta,data$param,center,u0=u0[d2],u1=k*u0[d2],smoothing=smoothing,GBC=T)
         
         Shat = list()
         for ( l in 1:L )
@@ -370,7 +370,7 @@ SimGBC_Plain <- function(R,seed,p,n,type,param,overlap,L,k,v0,lam,eta,center=1,s
     }
   }
   
-  list(p=p,n=n,type=type,param=param,overlap=overlap,L=L,k=k,v0=v0,lam=lam,eta=eta,S=S,CE=CE,FP=FP,FN=FN,SEN=SEN,SPE=SPE,MCC=MCC,CS=CS)
+  list(p=p,n=n,type=type,param=param,overlap=overlap,L=L,k=k,v0=v0,u0=u0,lam=lam,eta=eta,S=S,CE=CE,FP=FP,FN=FN,SEN=SEN,SPE=SPE,MCC=MCC,CS=CS)
 }
 
 
