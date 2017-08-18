@@ -55,7 +55,7 @@ int main()
 	m = fopen(fname,"w");
 	chmod(fname,0755);
 
-	for ( s=0 ; s<48 ; s++ )
+	for ( s=0 ; s<32 ; s++ )
 	{
 		sprintf(acronym,"%s%s%02d",method,crit,s+1);
 		sprintf(vname,"res%s",acronym);
@@ -102,15 +102,10 @@ int main()
 				fputs("eta = 0\n",f);
 				fputs("smoothing = \"Ising\"\n",f);
 			}
-			else if ( s/16 == 1 )
-			{
-				fputs("eta = 0.1\n",f);
-				fputs("smoothing = \"Ising\"\n",f);
-			}
 			else
 			{
 				fputs("eta = 0.1\n",f);
-				fputs("smoothing = \"MRF\"\n",f);
+				fputs("smoothing = \"Ising\"\n",f);
 			}
 
 			if ( (s/8)%2 == 0 )
@@ -124,14 +119,15 @@ int main()
 				fputs("param = NULL\n",f);
 			}
 
-			if ( (s/2)%4 == 0 )
-				fputs("L = 4\n",f);
-			else if ( (s/2)%4 == 1 )
+			if ( (s/4)%2 == 0 )
 				fputs("L = 5\n",f);
-			else if ( (s/2)%4 == 2 )
-				fputs("L = 10\n",f);
 			else
-				fputs("L = 20\n",f);
+				fputs("L = 10\n",f);
+
+			if ( (s/2)%2 == 0 )
+				fputs("Lmax = L\n",f);
+			else
+				fputs("Lmax = L+5\n",f);
 
 			if ( s%2 == 0 )
 				fputs("overlap = 0\n",f);
@@ -147,7 +143,7 @@ int main()
 			fputs("u0 = 1:5/100\n",f);
 			fputs("lam = 0\n",f);
 
-			sprintf(line,"%s = SimGBC_%s(%d,seed,p,n,type,param,overlap,L,k,v0,u0,lam,eta,smoothing=smoothing,batch=%d)\n",vname,crit,batch_size,batch);
+			sprintf(line,"%s = SimGBC_%s(%d,seed,p,n,type,param,overlap,L,Lmax,k,v0,u0,lam,eta,batch=%d)\n",vname,crit,batch_size,batch);
 			fputs(line,f);
 			sprintf(line,"save(%s,file=\"%s/%s%03d\")\n",vname,script,vname,batch+1);
 			fputs(line,f);
@@ -197,8 +193,6 @@ int main()
 		fputs("  {\n",g);
 		sprintf(line,"    tmp$S = c(tmp$S,%s$S)\n",vname);
 		fputs(line,g);
-//		sprintf(line,"    tmp$fits = c(tmp$fits,%s$fits)\n",vname);
-//		fputs(line,g);
 		sprintf(line,"    tmp$CE = abind(tmp$CE,%s$CE)\n",vname);
 		fputs(line,g);
 		sprintf(line,"    tmp$FP = abind(tmp$FP,%s$FP)\n",vname);
@@ -212,6 +206,8 @@ int main()
 		sprintf(line,"    tmp$MCC = abind(tmp$MCC,%s$MCC)\n",vname);
 		fputs(line,g);
 		sprintf(line,"    tmp$CS = abind(tmp$CS,%s$CS)\n",vname);
+		fputs(line,g);
+		sprintf(line,"    tmp$Lhat = abind(tmp$Lhat,%s$Lhat)\n",vname);
 		fputs(line,g);
 		fputs("  }\n",g);
 		fputs("}\n",g);
