@@ -127,7 +127,7 @@ int main()
 			if ( (s/2)%2 == 0 )
 				fputs("Lmax = L\n",f);
 			else
-				fputs("Lmax = L+5\n",f);
+				fputs("Lmax = L+3\n",f);
 
 			if ( s%2 == 0 )
 				fputs("overlap = 0\n",f);
@@ -141,7 +141,7 @@ int main()
 			fputs("k = 10\n",f);
 			fputs("v0 = 1:5/100\n",f);
 			fputs("u0 = 1:5/100\n",f);
-			fputs("lam = 0\n",f);
+			fputs("lam = 1\n",f);
 
 			sprintf(line,"%s = SimGBC_%s(%d,seed,p,n,type,param,overlap,L,Lmax,k,v0,u0,lam,eta,batch=%d)\n",vname,crit,batch_size,batch);
 			fputs(line,f);

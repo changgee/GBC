@@ -262,7 +262,7 @@ GFA_EM <- function(X,type,E,L,v0,v1,lam,eta,param,center=0,m=NULL,smoothing="MRF
     W = W * rep(tmp,each=p)
     Z = Z / tmp
 
-    if ( max(abs(ptheta-thetaW)) < 1e-2 )
+    if ( max(abs(ptheta-thetaW)) < 5e-2 )
       break
   }
   
