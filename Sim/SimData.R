@@ -1,9 +1,8 @@
 
 
-SimData <- function(seed,p,n,type,param,overlap,Edensity=0.05)
+SimData <- function(seed,p,n,type,param,overlap,L,Edensity=0.05)
 {
   size = 50
-  L = 4
 
   meanWZ = 1.5
   sigmaWZ = 0.1
@@ -32,10 +31,10 @@ SimData <- function(seed,p,n,type,param,overlap,Edensity=0.05)
   
 
   W = matrix(0,p,L)
-  W[1:(size+overlap),1] = rnorm(size+overlap,meanWZ,sigmaWZ) * sample(c(-1,1),size+overlap,TRUE)
-  W[size+1:(size+overlap),2] = rnorm(size+overlap,meanWZ,sigmaWZ) * sample(c(-1,1),size+overlap,TRUE)
-  W[2*size+1:(size+overlap),3] = rnorm(size+overlap,meanWZ,sigmaWZ) * sample(c(-1,1),size+overlap,TRUE)
-  W[3*size+1:size,4] = rnorm(size,meanWZ,sigmaWZ) * sample(c(-1,1),size,TRUE)
+  if ( L > 1 )
+    for ( l in 1:(L-1) )
+      W[(l-1)*size+1:(size+overlap),l] = rnorm(size+overlap,meanWZ,sigmaWZ) * sample(c(-1,1),size+overlap,TRUE)
+  W[(L-1)*size+1:size,L] = rnorm(size,meanWZ,sigmaWZ) * sample(c(-1,1),size,TRUE)
 
   sizeZ = rpois(L,30)
   Z = matrix(0,L,n)
@@ -71,6 +70,6 @@ SimData <- function(seed,p,n,type,param,overlap,Edensity=0.05)
   E = unique(rbind(E,E[,2:1]))
   E = E[order(E[,1],E[,2]),]
   
-  list(p=p,n=n,type=type,param=param,W=W,Z=Z,m=m,mu=mu,X=X,E=E)
+  list(p=p,n=n,type=type,param=param,overlap=overlap,L=L,W=W,Z=Z,m=m,mu=mu,X=X,E=E)
 }
 
