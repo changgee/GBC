@@ -355,7 +355,6 @@ SimGBC_Plain <- function(R,seed,p,n,type,param,overlap,L,Lmax,k,v0,u0,lam,eta,ce
           Shat[[l]] = list(r=which(fit$thetaW[,l]>thres),c=which(fit$thetaZ[l,]>thres))
         eval = gbcmetric(Shat,S[[r]],p,n)
         
-        fits[[r]][[d1]][[d2]] = fit
         CE[d1,d2,r] = eval$CE
         FP[d1,d2,r] = eval$FP_CE
         FN[d1,d2,r] = eval$FN_CE
