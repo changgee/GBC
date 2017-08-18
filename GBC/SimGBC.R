@@ -331,6 +331,7 @@ SimGBC_Plain <- function(R,seed,p,n,type,param,overlap,L,k,v0,u0,lam,eta,center=
   SPE = array(0,c(D1,D2,R))
   MCC = array(0,c(D1,D2,R))
   CS = array(0,c(D1,D2,R))
+  Lhat = array(0,c(D1,D2,R))
   
   S = list()
   fits = list()
@@ -366,11 +367,12 @@ SimGBC_Plain <- function(R,seed,p,n,type,param,overlap,L,k,v0,u0,lam,eta,center=
         SPE[d1,d2,r] = eval$SPE_CE
         MCC[d1,d2,r] = eval$MCC_CE
         CS[d1,d2,r] = eval$CS
+        Lhat[d1,d2,r] = eval$L1
       }
     }
   }
   
-  list(p=p,n=n,type=type,param=param,overlap=overlap,L=L,k=k,v0=v0,u0=u0,lam=lam,eta=eta,S=S,CE=CE,FP=FP,FN=FN,SEN=SEN,SPE=SPE,MCC=MCC,CS=CS)
+  list(p=p,n=n,type=type,param=param,overlap=overlap,L=L,k=k,v0=v0,u0=u0,lam=lam,eta=eta,S=S,CE=CE,FP=FP,FN=FN,SEN=SEN,SPE=SPE,MCC=MCC,CS=CS,Lhat=Lhat)
 }
 
 
