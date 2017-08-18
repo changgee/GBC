@@ -30,7 +30,7 @@
 # 2: Negative Binomial - r_j must be provided as param
 # 3: Poisson - N must be provided as param
 
-GFA_EM <- function(X,type,E,L,v0,v1,lam,eta,param,center=0,m=NULL,smoothing="MRF",W.init=NULL,GBC=F,u0=v0,u1=v1,zeta=lam,PX=F)
+GFA_EM <- function(X,type,E,L,v0,v1,lam,eta,param,center=0,m=NULL,smoothing="MRF",W.init=NULL,GBC=F,u0=v0,u1=v1,zeta=lam)
 {
   p = nrow(X)
   n = ncol(X)
@@ -137,6 +137,19 @@ GFA_EM <- function(X,type,E,L,v0,v1,lam,eta,param,center=0,m=NULL,smoothing="MRF
   lu1 = log(u1)
   dlu = lu1-lu0
   
+
+  iV = iv0 + thetaW*div
+  if ( GBC )
+    iU = iu0 + thetaZ*diu
+  else
+    iU = matrix(1,L,n)
+  A = apply(W^2*iV,2,sum)
+  B = apply(Z^2*iU,1,sum)
+  tmp = sqrt(sqrt(B/A))
+  W = W * rep(tmp,each=p)
+  Z = Z / tmp
+  
+  
   iter = 0
   while (T)
   {
@@ -226,17 +239,6 @@ GFA_EM <- function(X,type,E,L,v0,v1,lam,eta,param,center=0,m=NULL,smoothing="MRF
     }
   
     
-    if ( PX )
-    {
-      # M-step for A
-      A = Z%*%t(Z)/n
-      
-      # Rotation
-      cA = t(chol(A))
-      Z = forwardsolve(cA,Z)
-    }
-  
-    
     # M-step for W
     for ( j in 1:p )
     {
@@ -249,17 +251,18 @@ GFA_EM <- function(X,type,E,L,v0,v1,lam,eta,param,center=0,m=NULL,smoothing="MRF
 
     
     # W and Z adjustments
-    if ( iter <= 100 )
-      for ( l in 1:L )
-      {
-        ww = sum(W[,l]^2)
-        zz = sum(Z[l,]^2)
-        W[,l] = sqrt(sqrt(p*zz/ww/n)) * W[,l]
-        Z[l,] = sqrt(sqrt(n*ww/zz/p)) * Z[l,]
-      }
-    
+    iV = iv0 + thetaW*div
+    if ( GBC )
+      iU = iu0 + thetaZ*diu
+    else
+      iU = matrix(1,L,n)
+    A = apply(W^2*iV,2,sum)
+    B = apply(Z^2*iU,1,sum)
+    tmp = sqrt(sqrt(B/A))
+    W = W * rep(tmp,each=p)
+    Z = Z / tmp
 
-    if ( max(abs(ptheta-thetaW)) < 5e-2 )
+    if ( max(abs(ptheta-thetaW)) < 1e-2 )
       break
   }
   
