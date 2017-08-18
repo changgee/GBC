@@ -98,7 +98,7 @@ int main()
 			sprintf(line,"source(\"%s/%s\")\n",home,src);
 			fputs(line,f);
 
-			if ( (s/8)%2 == 0 )
+			if ( s/8 == 0 )
 			{
 				fputs("type = 0\n",f);
 				fputs("param = 4\n",f);
@@ -109,14 +109,15 @@ int main()
 				fputs("param = NULL\n",f);
 			}
 
-			if ( (s/2)%4 == 0 )
-				fputs("L = 4\n",f);
-			else if ( (s/2)%4 == 1 )
+			if ( (s/4)%2 == 0 )
 				fputs("L = 5\n",f);
-			else if ( (s/2)%4 == 2 )
-				fputs("L = 10\n",f);
 			else
-				fputs("L = 20\n",f);
+				fputs("L = 10\n",f);
+
+			if ( (s/2)%2 == 0 )
+				fputs("Lmax = L\n",f);
+			else
+				fputs("Lmax = L+3\n",f);
 
 			if ( s%2 == 0 )
 				fputs("overlap = 0\n",f);
@@ -128,9 +129,9 @@ int main()
 
 			fputs("seed = 100\n",f);
 			fputs("thrW = 2:6/2\n",f);
-			fputs("thrZ = 1:5/10\n",f);
+			fputs("thrZ = 2:6/15\n",f);
 
-			sprintf(line,"%s = SimFABIA_%s(%d,seed,p,n,type,param,overlap,L,thrW,thrZ,batch=%d)\n",vname,crit,batch_size,batch);
+			sprintf(line,"%s = SimFABIA_%s(%d,seed,p,n,type,param,overlap,L,Lmax,thrW,thrZ,batch=%d)\n",vname,crit,batch_size,batch);
 			fputs(line,f);
 			sprintf(line,"save(%s,file=\"%s/%s%03d\")\n",vname,script,vname,batch+1);
 			fputs(line,f);
