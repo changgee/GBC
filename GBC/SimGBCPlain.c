@@ -55,7 +55,7 @@ int main()
 	m = fopen(fname,"w");
 	chmod(fname,0755);
 
-	for ( s=0 ; s<8 ; s++ )
+	for ( s=0 ; s<32 ; s++ )
 	{
 		sprintf(acronym,"%s%s%02d",method,crit,s+1);
 		sprintf(vname,"res%s",acronym);
@@ -139,8 +139,8 @@ int main()
 
 			fputs("seed = 100\n",f);
 			fputs("k = 10\n",f);
-			fputs("v0 = 6:10/50\n",f);
-			fputs("lam = 3:7/25\n",f);
+			fputs("v0 = 5:9/50\n",f);
+			fputs("lam = 3:7/15\n",f);
 
 			sprintf(line,"%s = SimGBC_%s(%d,seed,p,n,type,param,overlap,L,Lmax,k,v0,lam,eta,batch=%d)\n",vname,crit,batch_size,batch);
 			fputs(line,f);
