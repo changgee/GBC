@@ -128,7 +128,7 @@ int main()
 
 			fputs("seed = 100\n",f);
 			fputs("thrW = 2:6/2\n",f);
-			fputs("thrZ = 1:5/10\n",f);
+			fputs("thrZ = 2:6/15\n",f);
 
 			sprintf(line,"%s = SimFABIA_%s(%d,seed,p,n,type,param,overlap,L,Lmax,thrW,thrZ,batch=%d)\n",vname,crit,batch_size,batch);
 			fputs(line,f);
