@@ -274,7 +274,7 @@ DataGBC_CE <- function(datapath,outpath,name,L,k,v0,lam,eta,bias,smoothing="Isin
   list(name=name,L=L,k=k,v0=v0,lam=lam,eta=eta,CE=CE,opt_CE=opt_CE,opt_L=opt_L,opt_k=opt_k,opt_v0=opt_v0,opt_lam=opt_lam,opt_bias=opt_bias)
 }  
 
-DataGBC_Plain <- function(datapath,outpath,name,L,k,v0,lam,eta,bias=1,center=1,smoothing="Ising")
+DataGBC_Plain <- function(datapath,outpath,name,L,k,v0,lam,eta,bias=0,center=1,smoothing="Ising")
 {
   D1 = length(v0)
   D2 = length(lam)
@@ -288,7 +288,7 @@ DataGBC_Plain <- function(datapath,outpath,name,L,k,v0,lam,eta,bias=1,center=1,s
       fpath = paste(outpath,fname,sep="/")
       if ( !file.exists(fpath) )
       {
-        time = system.time(fit <- GFA_EM(X,type,E,L,v0[d1],k*v0[d1],lam[d2],eta,param,center,smoothing=smoothing,GBC=T,zeta=bias*lam[d2]))
+        time = system.time(fit <- GFA_EM(X,type,E,L,v0[d1],k*v0[d1],lam[d2],eta,param,center,smoothing=smoothing,GBC=T,zeta=lam[d2]+bias))
         
         What = fit$W
         Zhat = fit$Z
