@@ -24,7 +24,7 @@ int main()
 	char vname[50];
 	FILE *f, *h;
 	int L, k, where;
-	double eta;
+	double bias, eta;
 
 	strcpy(data,"NCI60");
 	strcpy(ver,"1000");
@@ -56,8 +56,9 @@ int main()
 	chmod(fname,0755);
 
 	for ( L=9 ; L<=10 ; L++ )
-	for ( k=15 ; k<=40 ; k+=5 )
+	for ( k=15 ; k<=30 ; k+=5 )
 	for ( eta=0.00 ; eta<=0.21 ; eta+=0.05 )
+	for ( bias=0.0 ; bias<=2.1 ; bias+=0.5 )
 	{
 		sprintf(acronym,"%s%s_%s%s_L%02d_k%02d_eta%.2f",method,crit,data,ver,L,k,eta);
 		sprintf(vname,"res%s",acronym);
@@ -99,7 +100,9 @@ int main()
 		fputs(line,f);
 		sprintf(line,"lam = 1:20/10000\n");
 		fputs(line,f);
-		sprintf(line,"eta = %.02f\n",eta);
+		sprintf(line,"bias = %.1f\n",bias);
+		fputs(line,f);
+		sprintf(line,"eta = %.2f\n",eta);
 		fputs(line,f);
 
 		sprintf(line,"dpath = '%s'\n",datapath);
@@ -109,7 +112,7 @@ int main()
 		sprintf(line,"name = '%s%s'\n",data,ver);
 		fputs(line,f);
 
-		sprintf(line,"DataGBC_%s(dpath,opath,name,L,k,v0,lam,eta)\n",crit);
+		sprintf(line,"DataGBC_%s(dpath,opath,name,L,k,v0,lam,bias,eta)\n",crit);
 		fputs(line,f);
 
 		fclose(f);
