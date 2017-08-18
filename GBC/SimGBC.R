@@ -338,7 +338,7 @@ SimGBC_Plain <- function(R,seed,p,n,type,param,overlap,L,Lmax,k,v0,lam,eta,cente
   for ( r in 1:R )
   {
     print(r)
-    data = SimData(seed+batch+r,p,n,type,param,overlap)
+    data = SimData(seed+batch+r,p,n,type,param,overlap,L)
     
     S[[r]] = list()
     for ( l in 1:L )
