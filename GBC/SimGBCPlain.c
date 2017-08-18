@@ -142,11 +142,12 @@ int main()
 			fputs("n = 300\n",f);
 
 			fputs("seed = 100\n",f);
-			fputs("k = 5\n",f);
-			fputs("v0 = 3:7/40\n",f);
-			fputs("lam = 8:12/6\n",f);
+			fputs("k = 10\n",f);
+			fputs("v0 = 1:5/100\n",f);
+			fputs("u0 = 1:5/100\n",f);
+			fputs("lam = 0\n",f);
 
-			sprintf(line,"%s = SimGBC_%s(%d,seed,p,n,type,param,overlap,L,k,v0,lam,eta,smoothing=smoothing,batch=%d)\n",vname,crit,batch_size,batch);
+			sprintf(line,"%s = SimGBC_%s(%d,seed,p,n,type,param,overlap,L,k,v0,u0,lam,eta,smoothing=smoothing,batch=%d)\n",vname,crit,batch_size,batch);
 			fputs(line,f);
 			sprintf(line,"save(%s,file=\"%s/%s%03d\")\n",vname,script,vname,batch+1);
 			fputs(line,f);

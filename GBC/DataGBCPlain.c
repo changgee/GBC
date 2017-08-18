@@ -55,8 +55,8 @@ int main()
 	h = fopen(fname,"w");
 	chmod(fname,0755);
 
-	for ( L=10 ; L<=10 ; L++ )
-	for ( k=10 ; k<=20 ; k+=5 )
+	for ( L=9 ; L<=10 ; L++ )
+	for ( k=15 ; k<=40 ; k+=5 )
 	for ( eta=0.00 ; eta<=0.21 ; eta+=0.05 )
 	{
 		sprintf(acronym,"%s%s_%s%s_L%02d_k%02d_eta%.2f",method,crit,data,ver,L,k,eta);
@@ -95,9 +95,9 @@ int main()
 		fputs(line,f);
 		sprintf(line,"k = %d\n",k);
 		fputs(line,f);
-		sprintf(line,"v0 = 1:9/1000\n");
+		sprintf(line,"v0 = 1:20/10000\n");
 		fputs(line,f);
-		sprintf(line,"lam = 1:10/1000\n");
+		sprintf(line,"lam = 1:20/10000\n");
 		fputs(line,f);
 		sprintf(line,"eta = %.02f\n",eta);
 		fputs(line,f);
