@@ -228,17 +228,18 @@ DataGBC_BIC <- function(datapath,outpath,name,L,k,v0,lam,bias,eta,smoothing="Isi
 }  
 
 
-DataGBC_CE <- function(datapath,outpath,name,L,k,v0,lam,bias,eta,smoothing="Ising",thres=0.5)
+DataGBC_RES <- function(datapath,outpath,name,L,k,v0,lam,bias,eta,smoothing="Ising",thres=0.5)
 {
   D1 = length(L)
   D2 = length(k)
   D3 = length(v0)
   D4 = length(lam)
   D5 = length(bias)
+  D6 = length(eta)
   
-  CE = array(0,c(D1,D2,D3,D4,D5))
-  opt_CE = -Inf
-  
+  CE = array(0,c(D1,D2,D3,D4,D5,D6))
+  BIC = array(0,c(D1,D2,D3,D4,D5,D6))
+
   load(datapath)
   S = list()
   for ( i in 1:9 )
@@ -249,29 +250,29 @@ DataGBC_CE <- function(datapath,outpath,name,L,k,v0,lam,bias,eta,smoothing="Isin
       for ( d3 in 1:D3 )
         for ( d4 in 1:D4 )
           for ( d5 in 1:D5 )
-          {
-            fname = sprintf("res_%s_GBC_%02d_%02d_%.4f_%.4f_%.1f_%.2f",name,L[d1],k[d2],v0[d3],lam[d4],bias[d5],eta)
-            fpath = paste(outpath,fname,sep="/")
-            load(fpath)
-            
-            Shat = list()
-            for ( l in 1:L[d1] )
-              Shat[[l]] = list(r=which(thetaWhat[,l]>thres),c=which(thetaZhat[l,]>thres))
-  
-            CE[d1,d2,d3,d4,d5] = gbcmetric(Shat,S,p,n,1)$CE
-            
-            if ( opt_CE < CE[d1,d2,d3,d4,d5] )
+            for ( d6 in 1:D6 )
             {
-              opt_CE = CE[d1,d2,d3,d4,d5]
-              opt_L = L[d1]
-              opt_k = k[d2]
-              opt_v0 = v0[d3]
-              opt_lam = lam[d4]
-              opt_bias = bias[d5]
-            }
-          }
+              fname = sprintf("res_%s_GBC_%02d_%02d_%.4f_%.4f_%.1f_%.2f",name,L[d1],k[d2],v0[d3],lam[d4],bias[d5],eta[d6])
+              fpath = paste(outpath,fname,sep="/")
+              load(fpath)
+            
+              Shat = list()
+              for ( l in 1:L[d1] )
+                Shat[[l]] = list(r=which(thetaWhat[,l]>thres),c=which(thetaZhat[l,]>thres))
+    
+              CE[d1,d2,d3,d4,d5,d6] = gbcmetric(Shat,S,p,n,1)$CE
   
-  list(name=name,L=L,k=k,v0=v0,lam=lam,eta=eta,CE=CE,opt_CE=opt_CE,opt_L=opt_L,opt_k=opt_k,opt_v0=opt_v0,opt_lam=opt_lam,opt_bias=opt_bias)
+              What = What*(thetaWhat>thres)
+              Zhat = Zhat*(thetaZhat>thres)
+              muhat = What %*% Zhat + mhat
+              
+              nParam = sum(thetaWhat>thres) + sum(thetaZhat>thres)
+              nParam = nParam + p
+              
+              BIC[d1,d2,d3,d4,d5,d6] = -2*llk(X,muhat,type,param) + nParam*log(n*p)
+            }
+  
+  list(name=name,L=L,k=k,v0=v0,lam=lam,eta=eta,CE=CE,BIC=BIC)
 }  
 
 DataGBC_Plain <- function(datapath,outpath,name,L,k,v0,lam,bias,eta,center=1,smoothing="Ising")
