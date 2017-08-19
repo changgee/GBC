@@ -27,7 +27,7 @@ int main()
 	double bias, eta;
 
 	strcpy(data,"NCI60");
-	strcpy(ver,"100");
+	strcpy(ver,"500");
 	strcpy(method,"GBC");
 	strcpy(crit,"Plain");
 
@@ -55,7 +55,7 @@ int main()
 	h = fopen(fname,"w");
 	chmod(fname,0755);
 
-	for ( L=9 ; L<=10 ; L++ )
+	for ( L=8 ; L<=10 ; L++ )
 	for ( k=15 ; k<=30 ; k+=5 )
 	for ( bias=0.0 ; bias<=2.1 ; bias+=0.5 )
 	for ( eta=0.00 ; eta<=0.21 ; eta+=0.05 )
