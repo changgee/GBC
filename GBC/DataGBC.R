@@ -181,7 +181,7 @@ DataGBC_CCV <- function(X,E,L,k,v0,lam,eta,param,intercept=F,smoothing="Ising",t
   list(L=L,k=k,v0=v0,lam=lam,eta=eta,fold=fold,CCV=CCV,opt_v0=opt_v0,opt_lam=opt_lam,opt_fit=fit,opt_biclus=Shat,time=as.numeric(time[1]))
 }  
 
-DataGBC_BIC <- function(datapath,outpath,name,L,k,v0,lam,eta,bias,smoothing="Ising",thres=0.5)
+DataGBC_BIC <- function(datapath,outpath,name,L,k,v0,lam,bias,eta,smoothing="Ising",thres=0.5)
 {
   D1 = length(L)
   D2 = length(k)
@@ -228,7 +228,7 @@ DataGBC_BIC <- function(datapath,outpath,name,L,k,v0,lam,eta,bias,smoothing="Isi
 }  
 
 
-DataGBC_CE <- function(datapath,outpath,name,L,k,v0,lam,eta,bias,smoothing="Ising",thres=0.5)
+DataGBC_CE <- function(datapath,outpath,name,L,k,v0,lam,bias,eta,smoothing="Ising",thres=0.5)
 {
   D1 = length(L)
   D2 = length(k)
@@ -274,7 +274,7 @@ DataGBC_CE <- function(datapath,outpath,name,L,k,v0,lam,eta,bias,smoothing="Isin
   list(name=name,L=L,k=k,v0=v0,lam=lam,eta=eta,CE=CE,opt_CE=opt_CE,opt_L=opt_L,opt_k=opt_k,opt_v0=opt_v0,opt_lam=opt_lam,opt_bias=opt_bias)
 }  
 
-DataGBC_Plain <- function(datapath,outpath,name,L,k,v0,lam,eta,bias=0,center=1,smoothing="Ising")
+DataGBC_Plain <- function(datapath,outpath,name,L,k,v0,lam,bias,eta,center=1,smoothing="Ising")
 {
   D1 = length(v0)
   D2 = length(lam)
