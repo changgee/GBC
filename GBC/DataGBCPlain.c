@@ -27,7 +27,7 @@ int main()
 	double bias, eta;
 
 	strcpy(data,"NCI60");
-	strcpy(ver,"1000");
+	strcpy(ver,"100");
 	strcpy(method,"GBC");
 	strcpy(crit,"Plain");
 
@@ -57,10 +57,10 @@ int main()
 
 	for ( L=9 ; L<=10 ; L++ )
 	for ( k=15 ; k<=30 ; k+=5 )
-	for ( eta=0.00 ; eta<=0.21 ; eta+=0.05 )
 	for ( bias=0.0 ; bias<=2.1 ; bias+=0.5 )
+	for ( eta=0.00 ; eta<=0.21 ; eta+=0.05 )
 	{
-		sprintf(acronym,"%s%s_%s%s_L%02d_k%02d_eta%.2f",method,crit,data,ver,L,k,eta);
+		sprintf(acronym,"%s%s_%s%s_L%02d_k%02d_bias%.1f_eta%.2f",method,crit,data,ver,L,k,bias,eta);
 		sprintf(vname,"res%s",acronym);
 		sprintf(fname,"%s/%s",script,acronym);
 		if ( where == Emory )
