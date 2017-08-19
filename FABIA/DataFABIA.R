@@ -152,7 +152,6 @@ DataFABIA_CE <- function(datapath,outpath,name,L,thrW,thrZ,thres=0.5)
         fpath = paste(outpath,fname,sep="/")
         load(fpath)
         
-        
         Shat = list()
         for ( l in 1:L[d1] )
           Shat[[l]] =  list(r=bichat$numn[l,1]$numng,c=bichat$numn[l,2]$numnp )
