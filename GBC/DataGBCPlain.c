@@ -23,11 +23,11 @@ int main()
 	char src[50];
 	char vname[50];
 	FILE *f, *h;
-	int L, k, where;
-	double bias, eta;
+	int L, k, where, bias;
+	double eta;
 
 	strcpy(data,"NCI60");
-	strcpy(ver,"500");
+	strcpy(ver,"1000");
 	strcpy(method,"GBC");
 	strcpy(crit,"Plain");
 
@@ -55,12 +55,12 @@ int main()
 	h = fopen(fname,"w");
 	chmod(fname,0755);
 
-	for ( L=8 ; L<=10 ; L++ )
-	for ( k=15 ; k<=30 ; k+=5 )
-	for ( bias=0.0 ; bias<=2.1 ; bias+=0.5 )
-	for ( eta=0.00 ; eta<=0.21 ; eta+=0.05 )
+	for ( L=9 ; L<=9 ; L++ )
+	for ( k=10 ; k<=15 ; k+=5 )
+	for ( bias=20.0 ; bias<=30.1 ; bias+=1 )
+	for ( eta=0.00 ; eta<=1.01 ; eta+=0.2 )
 	{
-		sprintf(acronym,"%s%s_%s%s_L%02d_k%02d_bias%.1f_eta%.2f",method,crit,data,ver,L,k,bias,eta);
+		sprintf(acronym,"%s%s_%s%s_L%02d_k%02d_bias%02d_eta%.1f",method,crit,data,ver,L,k,bias,eta);
 		sprintf(vname,"res%s",acronym);
 		sprintf(fname,"%s/%s",script,acronym);
 		if ( where == Emory )
@@ -96,13 +96,13 @@ int main()
 		fputs(line,f);
 		sprintf(line,"k = %d\n",k);
 		fputs(line,f);
-		sprintf(line,"v0 = 1:20/10000\n");
+		sprintf(line,"v0 = 38:44/20000\n");
 		fputs(line,f);
-		sprintf(line,"lam = 1:20/10000\n");
+		sprintf(line,"lam = 0:5/10000\n");
 		fputs(line,f);
-		sprintf(line,"bias = %.1f\n",bias);
+		sprintf(line,"bias = %02d\n",bias);
 		fputs(line,f);
-		sprintf(line,"eta = %.2f\n",eta);
+		sprintf(line,"eta = %.1f\n",eta);
 		fputs(line,f);
 
 		sprintf(line,"dpath = '%s'\n",datapath);
