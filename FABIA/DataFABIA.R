@@ -130,15 +130,15 @@ DataFABIA_BIC <- function(datapath,outpath,name,L,thrW,thrZ,thres=0.5)
 }  
 
 
-DataFABIA_CE <- function(datapath,outpath,name,L,thrW,thrZ,thres=0.5)
+DataFABIA_RES <- function(datapath,outpath,name,L,thrW,thrZ,thres=0.5)
 {
   D1 = length(L)
   D2 = length(thrW)
   D3 = length(thrZ)
   
   CE = array(0,c(D1,D2,D3))
-  opt_CE = -Inf
-  
+  BIC = array(0,c(D1,D2,D3))
+
   load(datapath)
   S = list()
   for ( i in 1:9 )
@@ -158,17 +158,30 @@ DataFABIA_CE <- function(datapath,outpath,name,L,thrW,thrZ,thres=0.5)
 
         CE[d1,d2,d3] = gbcmetric(Shat,S,p,n,1)$CE
         
-        if ( opt_CE < CE[d1,d2,d3] )
+        W = matrix(0,p,L[d1])
+        Z = matrix(0,L[d1],n)
+        
+        nParam = p
+        for ( l in 1:L[d1] )
         {
-          opt_CE = CE[d1,d2,d3]
-          opt_L = L[d1]
-          opt_thrW = thrW[d2]
-          opt_thrZ = thrZ[d3]
+          Widx = bichat$numn[l,1]$numng
+          Zidx = bichat$numn[l,2]$numnp
+          if ( length(Widx) != 0 & length(Zidx) != 0 )
+          {
+            nParam = nParam + length(Widx) + length(Zidx)
+            W[Widx,l] = What[Widx,l]
+            Z[l,Zidx] = Zhat[l,Zidx]
+          }
         }
+        
+        muhat = W %*% Z + mhat
+        
+        BIC[d1,d2,d3] = n*p*log(mean((X-muhat)^2)) + nParam*log(n*p)
       }
   
-  list(name=name,L=L,thrW=thrW,thrZ=thrZ,CE=CE,opt_CE=opt_CE,opt_L=opt_L,opt_thrW=opt_thrW,opt_thrZ=opt_thrZ)
+  list(name=name,L=L,thrW=thrW,thrZ=thrZ,CE=CE,BIC=BIC)
 }  
+
 
 DataFABIA_Plain <- function(datapath,outpath,name,L,thrW,thrZ)
 {
