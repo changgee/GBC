@@ -262,12 +262,24 @@ DataGBC_RES <- function(datapath,outpath,name,L,k,v0,lam,bias,eta,smoothing="Isi
     
               CE[d1,d2,d3,d4,d5,d6] = gbcmetric(Shat,S,p,n,1)$CE
   
-              What = What*(thetaWhat>thres)
-              Zhat = Zhat*(thetaZhat>thres)
-              muhat = What %*% Zhat + mhat
               
-              nParam = sum(thetaWhat>thres) + sum(thetaZhat>thres)
-              nParam = nParam + p
+              W = matrix(0,p,L[d1])
+              Z = matrix(0,L[d1],n)
+              
+              nParam = p
+              for ( l in 1:L[d1] )
+              {
+                Widx = which(thetaWhat[,l]>thres)
+                Zidx = which(thetaZhat[l,]>thres)
+                if ( length(Widx) != 0 & length(Zidx) != 0 )
+                {
+                  nParam = nParam + length(Widx) + length(Zidx)
+                  W[Widx,l] = What[Widx,l]
+                  Z[l,Zidx] = Zhat[l,Zidx]
+                }
+              }
+              
+              muhat = W %*% Z + mhat
               
               BIC[d1,d2,d3,d4,d5,d6] = -2*llk(X,muhat,type,param) + nParam*log(n*p)
             }
