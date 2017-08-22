@@ -27,7 +27,7 @@ int main()
 	double eta;
 
 	strcpy(data,"NCI60");
-	strcpy(ver,"1000");
+	strcpy(ver,"100");
 	strcpy(method,"GBC");
 	strcpy(crit,"Plain");
 
@@ -58,7 +58,7 @@ int main()
 	for ( L=9 ; L<=9 ; L++ )
 	for ( k=10 ; k<=15 ; k+=5 )
 	for ( bias=20.0 ; bias<=30.1 ; bias+=1 )
-	for ( eta=0.00 ; eta<=1.01 ; eta+=0.2 )
+	for ( eta=0.00 ; eta<=1.01 ; eta+=1 )
 	{
 		sprintf(acronym,"%s%s_%s%s_L%02d_k%02d_bias%02d_eta%.1f",method,crit,data,ver,L,k,bias,eta);
 		sprintf(vname,"res%s",acronym);
