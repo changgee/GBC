@@ -1,3 +1,25 @@
+# Seed: seed value for random numbers
+# p: # of genes
+# n: # of samples
+# type: data types (p by 1 vector or scalar)
+#       0: Gaussian
+#       1: Binomial
+#       2: Negative Binomial
+#       3: Poisson
+#       NULL: Random types
+# param: parameters (p by 1 vector or scalar)
+#       type==0: error variance
+#       type==1: n_j - # of trials
+#       type==2: r_j - # of target failures
+#       type==3: large N used for approximation
+#       type==NULL:
+#           type==0: 4
+#           type==1: uniform on 1:20
+#           type==2: uniform on 1:20
+#           type==3: 20000
+# overlap: overlap size
+# L: # of bilusters
+# Edensity: density (probability) of edges
 
 
 SimData <- function(seed,p,n,type,param,overlap,L,Edensity=0.05)
