@@ -372,8 +372,7 @@ SimFABIA_Plain <- function(R,seed,p,n,type,param,overlap,L,Lmax,thrW,thrZ,batch=
   Lhat = array(0,c(D1,D2,R))
   
   S = list()
-  fits = list()
-  
+
   for ( r in 1:R )
   {
     data = SimData(seed+batch+r,p,n,type,param,overlap,L)
@@ -405,12 +404,57 @@ SimFABIA_Plain <- function(R,seed,p,n,type,param,overlap,L,Lmax,thrW,thrZ,batch=
         Lhat[d1,d2,r] = eval$L1
       }
     
-    fits[[r]] = fit
   }
   
   list(p=p,n=n,type=type,param=param,overlap=overlap,L=L,Lmax=Lmax,thrW=thrW,thrZ=thrZ,S=S,CE=CE,FP=FP,FN=FN,SEN=SEN,SPE=SPE,MCC=MCC,CS=CS,Lhat=Lhat)
 }
 
+
+
+
+SimFABIA_DEF <- function(R,seed,p,n,type,param,overlap,L,Lmax,batch=0)
+{
+  CE = rep(0,R)
+  FP = rep(0,R)
+  FN = rep(0,R)
+  SEN = rep(0,R)
+  SPE = rep(0,R)
+  MCC = rep(0,R)
+  CS = rep(0,R)
+  Lhat = rep(0,R)
+  
+  S = list()
+
+  for ( r in 1:R )
+  {
+    data = SimData(seed+batch+r,p,n,type,param,overlap,L)
+    
+    S[[r]] = list()
+    for ( l in 1:L )
+      S[[r]][[l]] = list(r=which(data$W[,l]!=0),c=which(data$Z[l,]!=0))
+    
+    fit = fabia(data$X,Lmax,random=0,center=2)
+    
+    fabia_bic = extractBic(fit)
+    
+    Shat = list()
+    for ( l in 1:Lmax )
+      Shat[[l]] =  list(r=fabia_bic$numn[l,1]$numng,c=fabia_bic$numn[l,2]$numnp )
+    
+    eval = gbcmetric(Shat,S[[r]],p,n)
+    
+    CE[r] = eval$CE
+    FP[r] = eval$FP_CE
+    FN[r] = eval$FN_CE
+    SEN[r] = eval$SEN_CE
+    SPE[r] = eval$SPE_CE
+    MCC[r] = eval$MCC_CE
+    CS[r] = eval$CS
+    Lhat[r] = eval$L1
+  }
+  
+  list(p=p,n=n,type=type,param=param,overlap=overlap,L=L,Lmax=Lmax,S=S,CE=CE,FP=FP,FN=FN,SEN=SEN,SPE=SPE,MCC=MCC,CS=CS,Lhat=Lhat)
+}
 
 
 

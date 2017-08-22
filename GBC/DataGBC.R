@@ -238,6 +238,10 @@ DataGBC_RES <- function(datapath,outpath,name,L,k,v0,lam,bias,eta,smoothing="Isi
   D6 = length(eta)
   
   CE = array(0,c(D1,D2,D3,D4,D5,D6))
+  CS = array(0,c(D1,D2,D3,D4,D5,D6))
+  nbc = array(0,c(D1,D2,D3,D4,D5,D6))
+  ng = array(0,c(D1,D2,D3,D4,D5,D6))
+  ns = array(0,c(D1,D2,D3,D4,D5,D6))
   BIC = array(0,c(D1,D2,D3,D4,D5,D6))
 
   load(datapath)
@@ -260,13 +264,18 @@ DataGBC_RES <- function(datapath,outpath,name,L,k,v0,lam,bias,eta,smoothing="Isi
               for ( l in 1:L[d1] )
                 Shat[[l]] = list(r=which(thetaWhat[,l]>thres),c=which(thetaZhat[l,]>thres))
     
-              CE[d1,d2,d3,d4,d5,d6] = gbcmetric(Shat,S,p,n,1)$CE
-  
+              pf = gbcmetric(Shat,S,p,n,1)
+              CE[d1,d2,d3,d4,d5,d6] = pf$CE
+              CS[d1,d2,d3,d4,d5,d6] = pf$CS
+              nbc[d1,d2,d3,d4,d5,d6] = pf$L1
+              
               
               W = matrix(0,p,L[d1])
               Z = matrix(0,L[d1],n)
               
               nParam = p
+              ng[d1,d2,d3,d4,d5,d6] = 0
+              ns[d1,d2,d3,d4,d5,d6] = 0
               for ( l in 1:L[d1] )
               {
                 Widx = which(thetaWhat[,l]>thres)
@@ -274,17 +283,20 @@ DataGBC_RES <- function(datapath,outpath,name,L,k,v0,lam,bias,eta,smoothing="Isi
                 if ( length(Widx) != 0 & length(Zidx) != 0 )
                 {
                   nParam = nParam + length(Widx) + length(Zidx)
+                  ng[d1,d2,d3,d4,d5,d6] = ng[d1,d2,d3,d4,d5,d6] + length(Widx)
+                  ns[d1,d2,d3,d4,d5,d6] = ns[d1,d2,d3,d4,d5,d6] + length(Zidx)
                   W[Widx,l] = What[Widx,l]
                   Z[l,Zidx] = Zhat[l,Zidx]
                 }
               }
-              
+              ng[d1,d2,d3,d4,d5,d6] = ng[d1,d2,d3,d4,d5,d6] / pf$L1
+              ns[d1,d2,d3,d4,d5,d6] = ns[d1,d2,d3,d4,d5,d6] / pf$L1
               muhat = W %*% Z + mhat
               
               BIC[d1,d2,d3,d4,d5,d6] = -2*llk(X,muhat,type,param) + nParam*log(n*p)
             }
   
-  list(name=name,L=L,k=k,v0=v0,lam=lam,eta=eta,CE=CE,BIC=BIC)
+  list(name=name,L=L,k=k,v0=v0,lam=lam,eta=eta,CE=CE,CS=CS,nbc=nbc,ng=ng,ns=ns,BIC=BIC)
 }  
 
 DataGBC_Plain <- function(datapath,outpath,name,L,k,v0,lam,bias,eta,center=1,smoothing="Ising")
